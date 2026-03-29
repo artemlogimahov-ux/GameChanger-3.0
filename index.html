@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="background-color" content="#0a0a0f">
+    <meta name="description" content="Система прокачки персонажа — преврати свою жизнь в RPG">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GameChanger">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="msapplication-TileColor" content="#00d4ff">
+    <meta name="msapplication-TileImage" content="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+    <title>GameChanger — Прокачай Себя</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #0a0a0f; --bg-panel: #12121a; --bg-panel-hover: #1a1a25;
+            --accent-blue: #00d4ff; --accent-purple: #9d4edd; --accent-cyan: #00f5d4;
+            --accent-gold: #ffd700; --accent-red: #ff3864; --accent-green: #00ff88;
+            --accent-orange: #ff9500; --accent-pink: #ff6b9d;
+            --text-primary: #ffffff; --text-secondary: #a0a0b0; --text-muted: #6a6a7a;
+            --stat-telo: #FF4444; --stat-finansy: #FFD700; --stat-intellekt: #4488FF;
+            --stat-volya: #FF8800; --stat-harizma: #FF44AA; --stat-psihika: #44DD88;
+        }
+        body { font-family: 'Russo One', 'Orbitron', sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 80%, rgba(0,212,255,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(157,78,221,0.08) 0%, transparent 50%), repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.02) 2px, rgba(0,212,255,0.02) 4px); pointer-events: none; z-index: -1; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 25px 20px; }
+        .header h1 { font-size: 2.8rem; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px rgba(0,212,255,0.5); letter-spacing: 3px; animation: glow 3s ease-in-out infinite; }
+        @keyframes glow { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+        .header-subtitle { color: var(--text-secondary); font-size: 1rem; margin-top: 8px; letter-spacing: 4px; text-transform: uppercase; }
+        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; max-width: 100%; overflow-x: auto; padding-bottom: 5px; }
+        .nav-tabs::-webkit-scrollbar { height: 4px; }
+        .nav-tabs::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 2px; }
+        .nav-tab { padding: 12px 25px; background: linear-gradient(145deg, rgba(18,18,26,0.9), rgba(30,30,45,0.9)); border: 2px solid var(--accent-blue); color: var(--accent-blue); font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; position: relative; overflow: hidden; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); }
+        .nav-tab::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent); transition: left 0.5s ease; }
+        .nav-tab:hover::before { left: 100%; }
+        .nav-tab:hover, .nav-tab.active { background: linear-gradient(145deg, var(--accent-blue), var(--accent-purple)); color: var(--bg-dark); box-shadow: 0 0 30px rgba(0,212,255,0.5); transform: translateY(-3px); }
+        .page-section { display: none; animation: fadeIn 0.5s ease; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .profile-grid { display: grid; grid-template-columns: 320px 1fr; gap: 25px; margin-top: 20px; }
+        @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+        .avatar-section { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-purple); border-radius: 15px; padding: 25px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(157,78,221,0.2); height: fit-content; }
+        .avatar-section::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, var(--accent-purple), transparent 30%); animation: rotate 4s linear infinite; opacity: 0.3; }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .avatar-container { position: relative; z-index: 1; }
+        .avatar-frame { width: 180px; height: 180px; margin: 0 auto 15px; border-radius: 50%; border: 4px solid var(--accent-blue); overflow: hidden; box-shadow: 0 0 30px rgba(0,212,255,0.4); }
+        .avatar-image { width: 100%; height: 100%; object-fit: cover; transition: all 0.5s ease; }
+        .daily-level-badge { display: inline-block; margin-top: 10px; padding: 8px 20px; background: linear-gradient(135deg, var(--accent-gold), #ff9500); color: var(--bg-dark); border-radius: 20px; font-size: 1rem; font-weight: bold; box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
+        .daily-xp-display { margin-top: 10px; color: var(--text-secondary); font-size: 0.9rem; }
+        .streak-block { margin-top: 15px; padding: 12px 20px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .streak-main { font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .streak-main.milestone-7 { color: #FF8800; }
+        .streak-main.milestone-30 { color: #FF4444; animation: streakPulse 2s ease-in-out infinite; }
+        @keyframes streakPulse { 0%, 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,68,68,0.5); } 50% { transform: scale(1.05); text-shadow: 0 0 20px rgba(255,68,68,0.8); } }
+        .streak-record { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
+        .stats-section { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-blue); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(0,212,255,0.15); }
+        .stats-title { font-size: 1.5rem; margin-bottom: 20px; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 15px; }
+        .stats-title::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, var(--accent-blue), transparent); }
+        .stat-item { margin-bottom: 18px; position: relative; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .stat-name { display: flex; align-items: center; gap: 10px; font-size: 1rem; }
+        .stat-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.2rem; }
+        .stat-value { font-size: 1.1rem; color: var(--accent-gold); }
+        .stat-bar-container { height: 16px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-bar { height: 100%; border-radius: 10px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; width: 0% !important; }
+        .stat-bar.animated { width: var(--target-width) !important; }
+        .stat-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .xp-popup { position: absolute; top: -25px; right: 10px; color: var(--accent-green); font-size: 0.9rem; font-weight: bold; opacity: 0; transform: translateY(10px); pointer-events: none; z-index: 10; }
+        .xp-popup.show { animation: xpPopupShow 1.5s ease forwards; }
+        @keyframes xpPopupShow { 0% { opacity: 0; transform: translateY(10px); } 20% { opacity: 1; transform: translateY(0); } 80% { opacity: 1; transform: translateY(-5px); } 100% { opacity: 0; transform: translateY(-15px); } }
+        .stat-telo .stat-icon { background: rgba(255,68,68,0.2); color: var(--stat-telo); }
+        .stat-telo .stat-bar { background: linear-gradient(90deg, var(--stat-telo), #ff6666); }
+        .stat-telo .stat-bar-container { background: rgba(255,68,68,0.15); }
+        .stat-finansy .stat-icon { background: rgba(255,215,0,0.2); color: var(--stat-finansy); }
+        .stat-finansy .stat-bar { background: linear-gradient(90deg, var(--stat-finansy), #ffe44d); }
+        .stat-finansy .stat-bar-container { background: rgba(255,215,0,0.15); }
+        .stat-intellekt .stat-icon { background: rgba(68,136,255,0.2); color: var(--stat-intellekt); }
+        .stat-intellekt .stat-bar { background: linear-gradient(90deg, var(--stat-intellekt), #669fff); }
+        .stat-intellekt .stat-bar-container { background: rgba(68,136,255,0.15); }
+        .stat-volya .stat-icon { background: rgba(255,136,0,0.2); color: var(--stat-volya); }
+        .stat-volya .stat-bar { background: linear-gradient(90deg, var(--stat-volya), #ffaa33); }
+        .stat-volya .stat-bar-container { background: rgba(255,136,0,0.15); }
+        .stat-harizma .stat-icon { background: rgba(255,68,170,0.2); color: var(--stat-harizma); }
+        .stat-harizma .stat-bar { background: linear-gradient(90deg, var(--stat-harizma), #ff66bb); }
+        .stat-harizma .stat-bar-container { background: rgba(255,68,170,0.15); }
+        .stat-psihika .stat-icon { background: rgba(68,221,136,0.2); color: var(--stat-psihika); }
+        .stat-psihika .stat-bar { background: linear-gradient(90deg, var(--stat-psihika), #66e4a0); }
+        .stat-psihika .stat-bar-container { background: rgba(68,221,136,0.15); }
+        .daily-quests-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .daily-quests-title { font-size: 1.8rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; }
+        .daily-date { color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px; }
+        .daily-quests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .quest-card { background: linear-gradient(145deg, rgba(18,18,26,0.9), rgba(30,30,45,0.9)); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; transition: all 0.3s ease; position: relative; }
+        .quest-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .quest-card.completed { opacity: 0.6; border-color: var(--accent-green); }
+        .quest-card.completed .quest-title { text-decoration: line-through; color: var(--text-muted); }
+        .quest-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .quest-stat-badge { padding: 4px 10px; border-radius: 15px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+        .quest-difficulty { padding: 3px 8px; border-radius: 10px; font-size: 0.7rem; }
+        .difficulty-easy { background: rgba(0,255,136,0.2); color: var(--accent-green); }
+        .difficulty-medium { background: rgba(0,212,255,0.2); color: var(--accent-blue); }
+        .difficulty-hard { background: rgba(255,56,100,0.2); color: var(--accent-red); }
+        .quest-title { font-size: 1.1rem; margin-bottom: 5px; color: var(--text-primary); }
+        .quest-description { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4; }
+        .quest-reward { display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; color: var(--accent-gold); }
+        .quest-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-complete, .btn-swap, .btn-edit-quest { padding: 8px 15px; border: none; font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-complete { background: var(--accent-green); color: var(--bg-dark); }
+        .btn-complete:hover { box-shadow: 0 5px 20px rgba(0,255,136,0.4); }
+        .btn-swap { background: rgba(0,212,255,0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .btn-edit-quest { background: rgba(255,215,0,0.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .quest-section-title { font-size: 1.2rem; color: var(--accent-gold); margin: 20px 0 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-selector-section { background: linear-gradient(145deg, rgba(18,18,26,0.9), rgba(30,30,45,0.9)); border: 2px solid var(--accent-gold); border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 0 30px rgba(255,215,0,0.15); animation: fadeIn 0.5s ease; }
+        .stat-selector-title { font-size: 1.2rem; color: var(--accent-gold); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        .stat-selector-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-option { display: flex; align-items: center; cursor: pointer; transition: all 0.3s ease; }
+        .stat-option input[type="checkbox"] { display: none; }
+        .stat-option-content { display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; width: 100%; transition: all 0.3s ease; }
+        .stat-option:hover .stat-option-content { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
+        .stat-option input[type="checkbox"]:checked + .stat-option-content { border-color: var(--accent-green); background: rgba(0,255,136,0.1); box-shadow: 0 0 20px rgba(0,255,136,0.2); }
+        .stat-option-icon { font-size: 1.4rem; }
+        .stat-option-name { font-size: 0.9rem; color: var(--text-primary); }
+        .stat-selector-actions { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .btn-select-all-stats { padding: 12px 25px; background: rgba(0,212,255,0.2); border: 2px solid var(--accent-blue); color: var(--accent-blue); font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 8px; }
+        .btn-select-all-stats:hover { background: var(--accent-blue); color: var(--bg-dark); }
+        .btn-generate-quests { padding: 12px 30px; background: linear-gradient(135deg, var(--accent-green), #00cc6a); border: none; color: var(--bg-dark); font-family: inherit; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; border-radius: 8px; font-weight: bold; }
+        .btn-generate-quests:hover { box-shadow: 0 10px 30px rgba(0,255,136,0.5); transform: translateY(-2px); }
+        .selected-stats-display { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; }
+        .selected-stats-label { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; }
+        #selectedStatsList { display: flex; gap: 10px; flex-wrap: wrap; }
+        .selected-stat-tag { padding: 6px 12px; background: var(--accent-green); color: var(--bg-dark); border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .btn-change-stats { padding: 8px 15px; background: rgba(0,212,255,0.2); border: 1px solid var(--accent-blue); color: var(--accent-blue); font-family: inherit; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; margin-left: auto; }
+        .btn-change-stats:hover { background: var(--accent-blue); color: var(--bg-dark); }
+        .weekly-plan-container { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-cyan); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(0,245,212,0.15); }
+        .weekly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .weekly-title { font-size: 1.5rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; }
+        .week-navigation { display: flex; align-items: center; gap: 15px; }
+        .week-nav-btn { padding: 8px 15px; background: rgba(0,245,212,0.2); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-family: inherit; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; border-radius: 5px; }
+        .week-nav-btn:hover { background: var(--accent-cyan); color: var(--bg-dark); }
+        .week-label { font-size: 1rem; color: var(--text-primary); min-width: 120px; text-align: center; }
+        .btn-refresh-systems { padding: 10px 20px; background: rgba(0,255,136,0.2); border: 1px solid var(--accent-green); color: var(--accent-green); font-family: inherit; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-refresh-systems:hover { background: var(--accent-green); color: var(--bg-dark); }
+        .btn-sort-by-time { padding: 10px 20px; background: rgba(0,212,255,0.2); border: 1px solid var(--accent-blue); color: var(--accent-blue); font-family: inherit; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-sort-by-time:hover { background: var(--accent-blue); color: var(--bg-dark); }
+        .view-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        .view-toggle-btn { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .view-toggle-btn.active { background: var(--accent-cyan); color: var(--bg-dark); border-color: var(--accent-cyan); }
+        .weekly-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        @media (max-width: 1200px) { .weekly-days-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) { .weekly-days-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .weekly-days-grid { grid-template-columns: 1fr; } }
+        .weekly-day { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; min-height: 200px; position: relative; }
+        .weekly-day.today { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        .weekly-day.past { opacity: 0.7; }
+        .weekly-day.past .weekly-task:not(.completed) .task-text { text-decoration: line-through; color: var(--accent-red); }
+        .weekly-day-header { font-size: 0.9rem; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .weekly-day-date { font-size: 0.75rem; color: var(--text-muted); }
+        .weekly-task { display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 6px; margin-bottom: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; position: relative; }
+        .weekly-task:hover { background: rgba(255,255,255,0.1); }
+        .weekly-task.completed { opacity: 0.5; }
+        .weekly-task.completed .task-text { text-decoration: line-through; color: var(--text-muted); }
+        .task-checkbox { width: 18px; height: 18px; border: 2px solid var(--accent-green); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.2s ease; }
+        .task-checkbox:hover { background: rgba(0,255,136,0.2); }
+        .task-checkbox.checked { background: var(--accent-green); }
+        .task-checkbox.checked::after { content: '✓'; color: var(--bg-dark); font-size: 12px; font-weight: bold; }
+        .task-content { flex: 1; min-width: 0; }
+        .task-time { color: var(--accent-gold); font-size: 0.75rem; }
+        .task-text { color: var(--text-primary); word-break: break-word; }
+        .task-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; margin-left: 4px; }
+        .tag-system { background: rgba(157,78,221,0.3); color: var(--accent-purple); }
+        .btn-add-task { width: 100%; padding: 8px; background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: var(--text-muted); font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; border-radius: 5px; margin-top: 8px; }
+        .btn-add-task:hover { border-color: var(--accent-green); color: var(--accent-green); }
+        .day-task-badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .day-task-badge.none { background: rgba(106,106,122,0.3); color: var(--text-muted); }
+        .day-task-badge.partial { background: rgba(255,215,0,0.2); color: var(--accent-gold); }
+        .day-task-badge.complete { background: rgba(0,255,136,0.2); color: var(--accent-green); }
+        .task-system-icon { font-size: 0.7rem; margin-right: 5px; }
+        .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .btn-task-calendar { width: 24px; height: 24px; border: none; background: rgba(0,212,255,0.2); color: var(--accent-blue); border-radius: 4px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .btn-task-calendar:hover { background: var(--accent-blue); color: var(--bg-dark); }
+        .daily-summary-section { background: linear-gradient(145deg, rgba(18,18,26,0.95), rgba(30,30,45,0.95)); border: 2px solid var(--accent-gold); border-radius: 15px; padding: 25px; margin-top: 25px; box-shadow: 0 0 30px rgba(255,215,0,0.15); }
+        .daily-summary-title { font-size: 1.4rem; color: var(--accent-gold); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .daily-summary-title::before { content: '🏆'; }
+        .daily-level-display { text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; }
+        .daily-level-emoji { font-size: 2.5rem; }
+        .daily-level-name { font-size: 1.3rem; color: var(--accent-cyan); margin-top: 5px; }
+        .daily-level-range { font-size: 0.85rem; color: var(--text-secondary); }
+        .xp-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .xp-table th, .xp-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .xp-table th { color: var(--accent-cyan); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+        .xp-table td { color: var(--text-primary); }
+        .xp-table .stat-cell { display: flex; align-items: center; gap: 10px; }
+        .xp-table .xp-cell { color: var(--accent-gold); font-weight: bold; }
+        .xp-table .total-row { background: rgba(0,255,136,0.1); }
+        .xp-table .total-row td { color: var(--accent-green); font-weight: bold; border-top: 2px solid var(--accent-green); }
+        .daily-summary-card { background: linear-gradient(145deg, rgba(18,18,26,0.95), rgba(30,30,45,0.95)); border: 2px solid rgba(0,212,255,0.3); border-radius: 20px; padding: 30px; margin: 25px 0; box-shadow: 0 0 40px rgba(0,212,255,0.15), inset 0 0 60px rgba(0,212,255,0.05); position: relative; overflow: hidden; }
+        .daily-summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--stat-telo), var(--stat-finansy), var(--stat-intellekt), var(--stat-volya), var(--stat-harizma), var(--stat-psihika)); }
+        .daily-rank-display { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; }
+        .daily-rank-emoji { font-size: 5rem; display: block; margin-bottom: 15px; text-shadow: 0 0 40px currentColor; animation: rankGlow 2s ease-in-out infinite; }
+        @keyframes rankGlow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+        .daily-rank-name { font-size: 2.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 20px currentColor; }
+        .rank-afk { animation: rankSleep 3s ease-in-out infinite; }
+        @keyframes rankSleep { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        .daily-rank-xp { font-size: 2.5rem; font-weight: bold; text-align: center; margin: 20px 0; background: linear-gradient(135deg, var(--accent-gold), #ff9500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .daily-rank-xp-label { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .daily-stats-list { display: flex; flex-direction: column; gap: 12px; margin: 25px 0; }
+        .daily-stat-row { display: flex; align-items: center; gap: 12px; padding: 10px 15px; background: rgba(0,0,0,0.3); border-radius: 10px; }
+        .daily-stat-circle { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+        .daily-stat-name { flex: 1; font-size: 0.95rem; }
+        .daily-stat-xp { font-weight: bold; font-size: 1rem; }
+        .daily-stat-xp.zero { color: var(--text-muted); }
+        .weekly-summary-card { background: linear-gradient(145deg, rgba(18,18,26,0.95), rgba(30,30,45,0.95)); border: 2px solid rgba(255,215,0,0.3); border-radius: 20px; padding: 30px; margin: 25px 0; box-shadow: 0 0 40px rgba(255,215,0,0.15), inset 0 0 60px rgba(255,215,0,0.05); position: relative; overflow: hidden; }
+        .weekly-summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--stat-telo), var(--stat-finansy), var(--stat-intellekt), var(--stat-volya), var(--stat-harizma), var(--stat-psihika)); }
+        .weekly-date-range { text-align: center; font-size: 1rem; color: var(--text-secondary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .weekly-stats-extended { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .weekly-stat-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; text-align: center; }
+        .weekly-stat-box-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; }
+        .weekly-stat-box-value { font-size: 1.3rem; font-weight: bold; }
+        .weekly-best-worst { display: flex; gap: 15px; margin: 20px 0; }
+        .weekly-extreme-stat { flex: 1; padding: 15px; border-radius: 12px; text-align: center; }
+        .weekly-extreme-stat.best { background: rgba(0,255,136,0.1); border: 1px solid var(--accent-green); }
+        .weekly-extreme-stat.worst { background: rgba(255,56,100,0.1); border: 1px solid var(--accent-red); }
+        .weekly-extreme-label { font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px; }
+        .weekly-extreme-label.best { color: var(--accent-green); }
+        .weekly-extreme-label.worst { color: var(--accent-red); }
+        .daily-analysis-section { background: linear-gradient(145deg, rgba(18,18,26,0.9), rgba(30,30,45,0.9)); border: 2px solid var(--accent-purple); border-radius: 15px; padding: 25px; margin-top: 30px; box-shadow: 0 0 30px rgba(157,78,221,0.15); }
+        .daily-analysis-title { font-size: 1.3rem; color: var(--accent-purple); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .daily-analysis-title::before { content: '📔'; }
+        .previous-day-conclusions { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .previous-day-conclusions-title { font-size: 0.9rem; color: var(--accent-green); text-transform: uppercase; margin-bottom: 10px; }
+        .previous-day-conclusions-text { color: var(--text-primary); font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; }
+        .analysis-form { display: flex; flex-direction: column; gap: 15px; }
+        .analysis-field { display: flex; flex-direction: column; gap: 8px; }
+        .analysis-label { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        .analysis-textarea { width: 100%; min-height: 80px; background: rgba(0,0,0,0.4); border: 1px solid rgba(157,78,221,0.3); border-radius: 8px; padding: 12px 15px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; transition: all 0.3s ease; }
+        .analysis-textarea:focus { outline: none; border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(157,78,221,0.2); }
+        .analysis-textarea.large { min-height: 100px; }
+        .analysis-textarea::placeholder { color: var(--text-muted); font-style: italic; opacity: 0.7; }
+        .analysis-textarea:focus::placeholder { opacity: 0; transition: opacity 0.2s ease; }
+        .btn-save-analysis { padding: 12px 25px; background: linear-gradient(135deg, var(--accent-purple), #7b2cbf); border: none; color: var(--text-primary); font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; border-radius: 8px; margin-top: 10px; }
+        .btn-save-analysis:hover { box-shadow: 0 10px 30px rgba(157,78,221,0.4); }
+        .analysis-saved-message { color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; text-align: center; }
+        .weekly-analysis-section { background: linear-gradient(145deg, rgba(18,18,26,0.9), rgba(30,30,45,0.9)); border: 2px solid var(--accent-gold); border-radius: 15px; padding: 25px; margin-top: 25px; box-shadow: 0 0 30px rgba(255,215,0,0.15); }
+        .weekly-analysis-title { font-size: 1.3rem; color: var(--accent-gold); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .weekly-analysis-title::before { content: '📊'; }
+        .weekly-analysis-history { margin-top: 30px; }
+        .weekly-analysis-history-title { font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 15px; text-transform: uppercase; }
+        .weekly-analysis-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.2); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .weekly-analysis-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .weekly-analysis-item-date { color: var(--accent-gold); font-size: 0.9rem; }
+        .weekly-analysis-item-content { display: flex; flex-direction: column; gap: 10px; }
+        .weekly-analysis-question { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; }
+        .weekly-analysis-answer { color: var(--text-primary); font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; }
+        .goals-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 900px) { .goals-container { grid-template-columns: 1fr; } }
+        .vision-section { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-gold); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(255,215,0,0.15); height: fit-content; }
+        .vision-title { font-size: 1.5rem; color: var(--accent-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .vision-textarea { width: 100%; min-height: 200px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 15px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; resize: vertical; }
+        .btn-save-vision { margin-top: 15px; padding: 12px 25px; background: linear-gradient(135deg, var(--accent-gold), #ff9500); border: none; color: var(--bg-dark); font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; border-radius: 5px; }
+        .goals-list-section { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-purple); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(157,78,221,0.15); }
+        .goals-list-title { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-add-goal { width: 100%; padding: 15px; background: transparent; border: 2px dashed var(--accent-green); color: var(--accent-green); font-family: inherit; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; border-radius: 8px; margin-bottom: 20px; }
+        .btn-add-goal:hover { background: rgba(0,255,136,0.1); }
+        .goal-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(157,78,221,0.3); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .goal-title { font-size: 1.1rem; color: var(--text-primary); }
+        .goal-deadline { font-size: 0.8rem; color: var(--text-muted); }
+        .goal-progress-bar { height: 12px; background: rgba(0,0,0,0.4); border-radius: 6px; overflow: hidden; margin: 10px 0; position: relative; }
+        .goal-progress-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
+        .goal-progress-fill::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+        .goal-progress-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-top: 5px; }
+        .goal-progress-fraction { color: var(--text-secondary); }
+        .goal-progress-percent { color: var(--accent-gold); font-weight: bold; }
+        .goal-completed-badge { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; padding: 12px 20px; background: rgba(0,255,136,0.15); border: 1px solid var(--accent-green); border-radius: 10px; color: var(--accent-green); font-size: 1rem; animation: goalCompletePulse 0.6s ease; }
+        @keyframes goalCompletePulse { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        .goal-systems { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .goal-systems-title { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .system-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-bottom: 5px; font-size: 0.85rem; }
+        .system-days { display: flex; gap: 4px; }
+        .system-day { padding: 2px 6px; background: rgba(0,212,255,0.2); border-radius: 3px; font-size: 0.7rem; color: var(--accent-blue); }
+        .btn-add-system { padding: 6px 12px; background: rgba(0,255,136,0.2); border: 1px solid var(--accent-green); color: var(--accent-green); font-family: inherit; font-size: 0.7rem; cursor: pointer; border-radius: 5px; }
+        .subgoals-list { margin-top: 10px; padding-left: 15px; }
+        .subgoal-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 0.85rem; color: var(--text-secondary); }
+        .subgoal-checkbox { width: 16px; height: 16px; border: 2px solid var(--accent-cyan); border-radius: 3px; cursor: pointer; }
+        .subgoal-checkbox.checked { background: var(--accent-cyan); }
+        .goal-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-goal-edit, .btn-goal-delete { padding: 6px 12px; border: none; font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-goal-edit { background: rgba(0,212,255,0.2); color: var(--accent-blue); }
+        .btn-goal-delete { background: rgba(255,56,100,0.2); color: var(--accent-red); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-blue); border-radius: 15px; padding: 25px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.95); opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal-overlay.active .modal { transform: scale(1); opacity: 1; }
+        .modal-large { max-width: 800px; }
+        .modal-title { font-size: 1.3rem; color: var(--accent-blue); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; }
+        .form-input, .form-textarea, .form-select { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 15px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent-blue); }
+        input[type="date"].form-input { color-scheme: dark; }
+        .form-textarea { min-height: 100px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+        .form-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .btn-submit, .btn-cancel { flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; border-radius: 5px; }
+        .btn-submit { background: linear-gradient(135deg, var(--accent-green), #00cc6a); color: var(--bg-dark); }
+        .btn-submit:hover { box-shadow: 0 10px 30px rgba(0,255,136,0.4); }
+        .btn-cancel { background: rgba(255,56,100,0.2); border: 1px solid var(--accent-red); color: var(--accent-red); }
+        .btn-cancel:hover { background: var(--accent-red); color: var(--bg-dark); }
+        .day-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .day-option { padding: 10px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease; }
+        .day-option:hover { background: rgba(255,255,255,0.1); }
+        .day-option.selected { background: var(--accent-green); color: var(--bg-dark); border-color: var(--accent-green); font-weight: bold; }
+        #systemStatSelector .day-option { padding: 8px 12px; font-size: 0.8rem; }
+        #systemStatSelector .day-option.selected { background: currentColor; color: var(--bg-dark) !important; font-weight: bold; box-shadow: 0 0 15px currentColor; }
+        .template-list { max-height: 400px; overflow-y: auto; margin-bottom: 20px; }
+        .template-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,212,255,0.2); border-radius: 8px; margin-bottom: 10px; }
+        .template-info { flex: 1; }
+        .template-title { font-size: 0.95rem; color: var(--text-primary); margin-bottom: 4px; }
+        .template-meta { font-size: 0.75rem; color: var(--text-secondary); }
+        .template-actions { display: flex; gap: 8px; }
+        .btn-template-edit, .btn-template-delete { padding: 6px 12px; border: none; font-family: inherit; font-size: 0.7rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 4px; }
+        .btn-template-edit { background: rgba(0,212,255,0.2); color: var(--accent-blue); }
+        .btn-template-delete { background: rgba(255,56,100,0.2); color: var(--accent-red); }
+        .btn-add-template { width: 100%; padding: 12px; background: transparent; border: 2px dashed var(--accent-green); color: var(--accent-green); font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-add-template:hover { background: rgba(0,255,136,0.1); }
+        .level-up-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .level-up-overlay.active { display: flex !important; animation: levelUpBg 2s ease; }
+        @keyframes levelUpBg { 0% { background: rgba(0,212,255,0.5); } 100% { background: rgba(0,0,0,0.9); } }
+        .level-up-text { font-size: 4rem; background: linear-gradient(135deg, var(--accent-gold), #ff9500, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: levelUpPulse 1s ease-in-out infinite; text-transform: uppercase; letter-spacing: 10px; }
+        @keyframes levelUpPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .level-up-subtext { font-size: 2rem; color: var(--accent-cyan); margin-top: 20px; animation: fadeInUp 1s ease 0.5s both; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .char-level-section { margin-top: 15px; padding: 15px 20px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .char-level-rank { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .char-level-bar-container { width: 100%; height: 14px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
+        .char-level-bar { height: 100%; border-radius: 10px; transition: width 1s ease; position: relative; }
+        .char-level-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+        .char-level-text { font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-top: 8px; }
+        .levelup-animation-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .levelup-animation-overlay.active { display: flex; animation: levelupFadeIn 0.3s ease; }
+        @keyframes levelupFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .levelup-title { font-size: 3rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 4px; animation: levelupScale 0.5s ease forwards; text-shadow: 0 0 30px rgba(255,215,0,0.5); }
+        @keyframes levelupScale { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .levelup-level { font-size: 2rem; color: var(--text-primary); margin-top: 15px; animation: levelupFadeDelay 0.5s ease 0.3s both; }
+        @keyframes levelupFadeDelay { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .levelup-rank { font-size: 1.3rem; margin-top: 10px; animation: levelupFadeDelay 0.5s ease 0.5s both; }
+        .levelup-animation-overlay.fade-out { animation: levelupFadeOut 0.5s ease 1.5s forwards; }
+        @keyframes levelupFadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-secondary); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+        .empty-state-text { font-size: 1.1rem; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+        .journal-container { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-purple); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(157,78,221,0.15); }
+        .journal-title { font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 10px; }
+        .journal-title::before { content: '📖'; }
+        .journal-subtabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .journal-subtab { padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .journal-subtab.active { background: var(--accent-purple); color: var(--text-primary); border-color: var(--accent-purple); }
+        .journal-subtab:hover:not(.active) { background: rgba(157,78,221,0.2); }
+        .journal-content { display: none; }
+        .journal-content.active { display: block; }
+        .journal-entry { background: rgba(0,0,0,0.3); border: 1px solid rgba(157,78,221,0.3); border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
+        .journal-entry-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(157,78,221,0.1); cursor: pointer; transition: all 0.3s ease; }
+        .journal-entry-header:hover { background: rgba(157,78,221,0.2); }
+        .journal-entry-date { font-size: 1rem; color: var(--accent-purple); font-weight: bold; }
+        .journal-entry-toggle { font-size: 1.2rem; color: var(--text-secondary); transition: transform 0.3s ease; }
+        .journal-entry.expanded .journal-entry-toggle { transform: rotate(180deg); }
+        .journal-entry-body { display: none; padding: 20px; border-top: 1px solid rgba(157,78,221,0.2); }
+        .journal-entry.expanded .journal-entry-body { display: block; }
+        .journal-entry-field { margin-bottom: 15px; }
+        .journal-entry-field:last-child { margin-bottom: 0; }
+        .journal-entry-label { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px; }
+        .journal-entry-text { color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; background: rgba(0,0,0,0.2); padding: 12px 15px; border-radius: 8px; }
+        .journal-entry-text.empty { color: var(--text-muted); font-style: italic; }
+        .journal-empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .journal-empty-icon { font-size: 4rem; margin-bottom: 15px; opacity: 0.5; }
+        .journal-empty-text { font-size: 1.1rem; }
+        @media (max-width: 600px) { .header h1 { font-size: 1.8rem; } .nav-tab { padding: 10px 15px; font-size: 0.75rem; } .daily-quests-grid { grid-template-columns: 1fr; } .level-up-text { font-size: 2.5rem; } .weekly-days-grid { grid-template-columns: 1fr; } .journal-subtabs { flex-wrap: wrap; } }
+        .laws-container { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-gold); border-radius: 15px; padding: 25px; box-shadow: 0 0 40px rgba(255,215,0,0.15); }
+        .laws-title { font-size: 1.8rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .laws-subtitle { font-size: 1rem; color: var(--text-secondary); text-align: center; margin-bottom: 30px; }
+        .laws-list { display: flex; flex-direction: column; gap: 12px; max-width: 900px; margin: 0 auto; }
+        .law-accordion { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.2); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; }
+        .law-accordion:hover { border-color: rgba(255,215,0,0.4); box-shadow: 0 0 15px rgba(255,215,0,0.1); }
+        .law-accordion.active { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+        .law-header { display: flex; align-items: center; gap: 15px; padding: 18px 25px; cursor: pointer; background: linear-gradient(90deg, rgba(255,215,0,0.05), transparent); transition: all 0.3s ease; user-select: none; }
+        .law-header:hover { background: linear-gradient(90deg, rgba(255,215,0,0.1), transparent); }
+        .law-number { font-size: 1.4rem; font-weight: bold; color: var(--accent-gold); min-width: 90px; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+        .law-toggle { margin-left: auto; font-size: 1.2rem; color: var(--accent-gold); transition: transform 0.3s ease; }
+        .law-accordion.active .law-toggle { transform: rotate(180deg); }
+        .law-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; }
+        .law-accordion.active .law-body { max-height: 300px; padding: 0 25px 25px 130px; }
+        .law-text { font-size: 1.1rem; color: var(--text-primary); line-height: 1.7; font-style: italic; border-left: 3px solid var(--accent-gold); padding-left: 20px; }
+        @media (max-width: 768px) { .law-accordion.active .law-body { padding: 0 20px 20px 20px; } .law-header { padding: 15px 20px; } .law-number { font-size: 1.1rem; min-width: 70px; } .law-text { font-size: 1rem; padding-left: 15px; } .laws-title { font-size: 1.4rem; } }
+        .motivation-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 9999; opacity: 0; }
+        .motivation-overlay.active { animation: motivationFadeIn 0.3s ease forwards; }
+        .motivation-overlay.fade-out { animation: motivationFadeOut 0.5s ease forwards; }
+        @keyframes motivationFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes motivationFadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .motivation-content { text-align: center; transform: scale(0.5); animation: motivationScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes motivationScale { from { transform: scale(0.5); } to { transform: scale(1); } }
+        .motivation-text { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; background: linear-gradient(135deg, var(--accent-gold), #ff9500, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 60px rgba(255, 215, 0, 0.6); animation: motivationGlow 1s ease-in-out infinite alternate; white-space: nowrap; }
+        @keyframes motivationGlow { from { filter: brightness(1) drop-shadow(0 0 20px rgba(255, 215, 0, 0.5)); } to { filter: brightness(1.3) drop-shadow(0 0 40px rgba(255, 215, 0, 0.8)); } }
+        .motivation-particles { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; height: 400px; pointer-events: none; }
+        .motivation-particle { position: absolute; width: 8px; height: 8px; background: var(--accent-gold); border-radius: 50%; opacity: 0; }
+        .motivation-overlay.active .motivation-particle { animation: particleBurst 1s ease-out forwards; }
+        @keyframes particleBurst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); } }
+        .motivation-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 3px solid var(--accent-gold); border-radius: 50%; opacity: 0; }
+        .motivation-overlay.active .motivation-ring { animation: ringExpand 0.8s ease-out forwards; }
+        @keyframes ringExpand { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(2); } }
+        @media (max-width: 768px) { .motivation-text { font-size: 2rem; letter-spacing: 2px; } .motivation-particles { width: 250px; height: 250px; } }
+        @media (max-width: 768px) { .container { padding: 10px; } .header { padding: 15px 10px; } .header h1 { font-size: 1.6rem; letter-spacing: 1px; } .header-subtitle { font-size: 0.8rem; letter-spacing: 2px; } .nav-tabs { flex-direction: column; gap: 8px; margin: 15px 0; padding: 0 5px; } .nav-tab { width: 100%; padding: 14px 20px; font-size: 0.95rem; min-height: 48px; clip-path: none; border-radius: 8px; } }
+        @media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; gap: 15px; } .avatar-section { padding: 20px 15px; } .avatar-frame { width: 140px; height: 140px; } .daily-level-badge { font-size: 0.9rem; padding: 6px 15px; } .stats-section { padding: 20px 15px; } .stats-title { font-size: 1.2rem; } .stat-name { font-size: 0.9rem; } .stat-value { font-size: 1rem; } .char-level-section { padding: 12px 15px; } .char-level-rank { font-size: 0.95rem; } }
+        @media (max-width: 768px) { .daily-quests-header { flex-direction: column; align-items: flex-start; gap: 10px; } .daily-quests-title { font-size: 1.4rem; } .daily-quests-grid { grid-template-columns: 1fr; gap: 12px; } .quest-card { padding: 15px; } .quest-title { font-size: 1rem; } .quest-description { font-size: 0.8rem; } .quest-actions { flex-wrap: wrap; gap: 6px; } .btn-complete, .btn-swap, .btn-edit-quest { padding: 10px 12px; font-size: 0.7rem; min-height: 40px; flex: 1; } .stat-selector-section { padding: 20px 15px; } .stat-selector-options { grid-template-columns: 1fr; } .stat-option-content { padding: 14px; } .selected-stats-display { flex-direction: column; align-items: flex-start; gap: 10px; } .daily-summary-card { padding: 20px 15px; } .daily-rank-emoji { font-size: 3.5rem; } .daily-rank-name { font-size: 1.6rem; } .daily-rank-xp { font-size: 2rem; } .daily-stat-row { padding: 8px 12px; } .daily-analysis-section { padding: 20px 15px; } .analysis-textarea { min-height: 80px; padding: 12px; } }
+        @media (max-width: 768px) { .weekly-plan-container { padding: 20px 15px; } .weekly-header { flex-direction: column; align-items: stretch; gap: 15px; } .weekly-title { font-size: 1.3rem; text-align: center; } .weekly-header > div { flex-direction: column; gap: 10px; } .btn-refresh-systems, .btn-sort-by-time { width: 100%; padding: 12px; min-height: 48px; font-size: 0.85rem; } .week-navigation { justify-content: center; width: 100%; } .view-toggle { flex-wrap: wrap; gap: 8px; } .view-toggle-btn { flex: 1; min-width: 100px; padding: 12px; min-height: 44px; } .weekly-days-grid { grid-template-columns: 1fr; gap: 12px; } .weekly-day { padding: 15px; min-height: auto; } .weekly-day-header { font-size: 1rem; } .weekly-task { padding: 12px; font-size: 0.9rem; min-height: 44px; } .task-checkbox { width: 22px; height: 22px; } .btn-add-task { padding: 12px; min-height: 44px; } .weekly-summary-card { padding: 20px 15px; } .weekly-stats-extended { grid-template-columns: 1fr; } .weekly-best-worst { flex-direction: column; } .weekly-analysis-section { padding: 20px 15px; } }
+        @media (max-width: 768px) { .goals-container { grid-template-columns: 1fr; gap: 15px; } .vision-section, .goals-list-section { padding: 20px 15px; } .vision-title, .goals-list-title { font-size: 1.3rem; } .vision-textarea { min-height: 150px; padding: 12px; } .btn-add-goal { padding: 14px; min-height: 48px; font-size: 0.9rem; } .goal-item { padding: 15px; } .goal-title { font-size: 1rem; } .goal-progress-bar { height: 10px; } .goal-actions { flex-wrap: wrap; } .btn-goal-edit, .btn-goal-delete { padding: 8px 12px; min-height: 40px; flex: 1; } .system-item { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; } .system-days { flex-wrap: wrap; } }
+        @media (max-width: 768px) { .journal-container { padding: 20px 15px; } .journal-title { font-size: 1.4rem; } .journal-subtabs { flex-direction: column; gap: 8px; } .journal-subtab { width: 100%; padding: 12px; min-height: 44px; } .journal-entry-header { padding: 15px; } .journal-entry-body { padding: 15px; } .journal-entry-text { font-size: 0.9rem; padding: 10px 12px; } }
+        @media (max-width: 768px) { .laws-container { padding: 20px 15px; } .laws-title { font-size: 1.4rem; } .laws-subtitle { font-size: 0.9rem; } .law-header { padding: 16px 15px; min-height: 56px; } .law-number { font-size: 1rem; min-width: 80px; } .law-accordion.active .law-body { padding: 0 15px 20px 15px; } .law-text { font-size: 1rem; line-height: 1.6; padding-left: 12px; } }
+        @media (max-width: 768px) { .modal { padding: 20px 15px; margin: 10px; max-height: 95vh; } .modal-title { font-size: 1.1rem; } .form-group { margin-bottom: 15px; } .form-input, .form-textarea, .form-select { padding: 14px; font-size: 16px; min-height: 48px; } .form-textarea { min-height: 100px; } .form-row { grid-template-columns: 1fr; gap: 15px; } .form-actions { flex-direction: column; gap: 10px; } .btn-submit, .btn-cancel { width: 100%; padding: 14px; min-height: 48px; } .day-selector { gap: 6px; } .day-option { padding: 12px 14px; font-size: 0.85rem; min-height: 44px; } }
+        @media (max-width: 480px) { .header h1 { font-size: 1.4rem; } .nav-tab { font-size: 0.85rem; padding: 12px 15px; } .motivation-text { font-size: 1.5rem; letter-spacing: 1px; } .motivation-particles { width: 200px; height: 200px; } .quest-card { padding: 12px; } .weekly-day { padding: 12px; } .goal-item { padding: 12px; } .law-header { padding: 14px 12px; } .law-number { font-size: 0.9rem; min-width: 70px; } }
+        html, body { max-width: 100%; overflow-x: hidden; }
+        @media (pointer: coarse) { .task-checkbox, .subgoal-checkbox { min-width: 24px; min-height: 24px; } .btn-complete, .btn-swap, .btn-edit-quest, .btn-goal-edit, .btn-goal-delete, .btn-template-edit, .btn-template-delete { min-height: 44px; } }
+
+        /* === NEW: Google Calendar Sync Button === */
+        .btn-sync-calendar { padding: 10px 20px; background: linear-gradient(135deg, #4285f4, #34a853); border: none; color: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; display: flex; align-items: center; gap: 8px; }
+        .btn-sync-calendar:hover { box-shadow: 0 5px 20px rgba(66, 133, 244, 0.4); transform: translateY(-2px); }
+        .calendar-modal-task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,212,255,0.2); border-radius: 8px; margin-bottom: 10px; }
+        .calendar-modal-task-info { flex: 1; }
+        .calendar-modal-task-title { font-size: 0.95rem; color: var(--text-primary); margin-bottom: 4px; }
+        .calendar-modal-task-meta { font-size: 0.8rem; color: var(--text-secondary); }
+        .btn-add-to-calendar { padding: 8px 15px; background: rgba(66, 133, 244, 0.2); border: 1px solid #4285f4; color: #4285f4; font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; }
+        .btn-add-to-calendar:hover { background: #4285f4; color: #fff; }
+        .btn-add-all-calendar { width: 100%; padding: 12px; background: linear-gradient(135deg, #4285f4, #34a853); border: none; color: #fff; font-family: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; border-radius: 5px; margin-top: 15px; }
+        .btn-add-all-calendar:hover { box-shadow: 0 5px 20px rgba(66, 133, 244, 0.4); }
+        .calendar-warning { background: rgba(255, 149, 0, 0.1); border: 1px solid var(--accent-orange); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; color: var(--accent-orange); font-size: 0.85rem; display: flex; align-items: flex-start; gap: 10px; }
+        .calendar-warning::before { content: '⚠️'; font-size: 1.2rem; }
+        .calendar-modal-close { position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); color: var(--text-secondary); border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .calendar-modal-close:hover { background: rgba(255,56,100,0.3); color: var(--accent-red); }
+        .calendar-modal-header { position: relative; padding-right: 40px; }
+        .widget-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-gold); border-radius: 12px; padding: 15px 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.2); z-index: 9999; opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 90%; width: fit-content; }
+        .widget-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .widget-toast.hide { transform: translateX(-50%) translateY(100px); opacity: 0; }
+        .widget-toast-text { color: var(--text-primary); font-size: 0.95rem; text-align: center; }
+        .notification-popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease; }
+        .notification-popup-overlay.show { display: flex; opacity: 1; }
+        .notification-popup { background: linear-gradient(145deg, var(--bg-panel), rgba(20,20,35,0.95)); border: 2px solid var(--accent-blue); border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 0 50px rgba(0,212,255,0.3); transform: scale(0.9); opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .notification-popup-overlay.show .notification-popup { transform: scale(1); opacity: 1; }
+        .notification-popup-icon { font-size: 4rem; margin-bottom: 15px; }
+        .notification-popup-title { font-size: 1.4rem; color: var(--accent-blue); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        .notification-popup-text { color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 25px; }
+        .notification-popup-buttons { display: flex; gap: 15px; justify-content: center; }
+        .btn-notification-allow { padding: 12px 30px; background: linear-gradient(135deg, var(--accent-green), #00cc6a); border: none; color: var(--bg-dark); font-family: inherit; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; border-radius: 8px; font-weight: bold; }
+        .btn-notification-allow:hover { box-shadow: 0 5px 20px rgba(0,255,136,0.4); transform: translateY(-2px); }
+        .btn-notification-later { padding: 12px 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); font-family: inherit; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; border-radius: 8px; }
+        .btn-notification-later:hover { background: rgba(255,255,255,0.15); color: var(--text-primary); }
+        .time-validation-error { color: var(--accent-red); font-size: 0.8rem; margin-top: 5px; display: none; }
+        .time-validation-error.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⚔️ SOLO LEVELING ⚔️</h1>
+            <p class="header-subtitle">Система прокачки персонажа</p>
+        </header>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-page="profile">👤 Профиль</button>
+            <button class="nav-tab" data-page="daily">📅 Ежедневно</button>
+            <button class="nav-tab" data-page="weekly">📆 Недельный план</button>
+            <button class="nav-tab" data-page="goals">🎯 Цели</button>
+            <button class="nav-tab" data-page="journal">📖 Журнал</button>
+            <button class="nav-tab" data-page="laws">⚡ Законы победителей</button>
+        </nav>
+
+        <section id="profile" class="page-section active">
+            <div class="profile-grid">
+                <div class="avatar-section">
+                    <div class="avatar-container">
+                        <div class="avatar-frame"><img id="avatarImage" class="avatar-image" src="" alt="Аватар"></div>
+                        <div class="daily-level-badge" id="dailyLevelBadge">😴 AFK</div>
+                        <div class="daily-xp-display">Сегодня: <span id="todayXP">0</span> XP</div>
+                        <div class="streak-block">
+                            <div class="streak-main" id="streakDisplay">🔥 0 дней подряд</div>
+                            <div class="streak-record" id="streakRecord">Рекорд: 0 дней</div>
+                        </div>
+                        <div class="char-level-section">
+                            <div class="char-level-rank" id="charLevelRank">🟢 Новичок — Уровень 1</div>
+                            <div class="char-level-bar-container">
+                                <div class="char-level-bar" id="charLevelBar" style="width: 0%;"></div>
+                            </div>
+                            <div class="char-level-text" id="charLevelText">0 / 15 XP до уровня 2</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-section">
+                    <h2 class="stats-title">📊 Характеристики</h2>
+                    <div class="stat-item stat-telo">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">💪</span>Тело</div><div class="stat-value"><span id="stat-telo">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-telo" style="width:10%"></div></div>
+                    </div>
+                    <div class="stat-item stat-finansy">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">💰</span>Финансы</div><div class="stat-value"><span id="stat-finansy">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-finansy" style="width:10%"></div></div>
+                    </div>
+                    <div class="stat-item stat-intellekt">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">🧠</span>Интеллект</div><div class="stat-value"><span id="stat-intellekt">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-intellekt" style="width:10%"></div></div>
+                    </div>
+                    <div class="stat-item stat-volya">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">🔥</span>Воля / Дисциплина</div><div class="stat-value"><span id="stat-volya">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-volya" style="width:10%"></div></div>
+                    </div>
+                    <div class="stat-item stat-harizma">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">👥</span>Харизма / Социалка</div><div class="stat-value"><span id="stat-harizma">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-harizma" style="width:10%"></div></div>
+                    </div>
+                    <div class="stat-item stat-psihika">
+                        <div class="stat-header"><div class="stat-name"><span class="stat-icon">🧘</span>Психика / Внутренняя игра</div><div class="stat-value"><span id="stat-psihika">10</span></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar" id="bar-psihika" style="width:10%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="daily" class="page-section">
+            <div class="daily-quests-header">
+                <div><h2 class="daily-quests-title">📅 Ежедневно</h2><p class="daily-date" id="currentDate"></p></div>
+                <button class="btn-manage-templates" onclick="openTemplateManager()">⚙️ Шаблоны</button>
+            </div>
+            <div id="statSelectorSection" class="stat-selector-section">
+                <h3 class="stat-selector-title">🎯 Выбери, какие характеристики хочешь прокачать сегодня:</h3>
+                <div class="stat-selector-options">
+                    <label class="stat-option"><input type="checkbox" value="telo" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">💪</span><span class="stat-option-name">Тело</span></span></label>
+                    <label class="stat-option"><input type="checkbox" value="finansy" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">💰</span><span class="stat-option-name">Финансы</span></span></label>
+                    <label class="stat-option"><input type="checkbox" value="intellekt" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">🧠</span><span class="stat-option-name">Интеллект</span></span></label>
+                    <label class="stat-option"><input type="checkbox" value="volya" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">🔥</span><span class="stat-option-name">Воля / Дисциплина</span></span></label>
+                    <label class="stat-option"><input type="checkbox" value="harizma" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">👥</span><span class="stat-option-name">Харизма / Социалка</span></span></label>
+                    <label class="stat-option"><input type="checkbox" value="psihika" class="stat-checkbox"><span class="stat-option-content"><span class="stat-option-icon">🧘</span><span class="stat-option-name">Психика / Внутренняя игра</span></span></label>
+                </div>
+                <div class="stat-selector-actions">
+                    <button class="btn-select-all-stats" onclick="selectAllStats()">✓ Выбрать все</button>
+                    <button class="btn-generate-quests" onclick="generateQuestsWithSelectedStats()">⚔️ Сгенерировать квесты</button>
+                </div>
+            </div>
+            <div id="selectedStatsDisplay" class="selected-stats-display" style="display:none;">
+                <span class="selected-stats-label">Сегодняшний фокус:</span>
+                <span id="selectedStatsList"></span>
+                <button class="btn-change-stats" onclick="showStatSelector()">🔄 Изменить</button>
+            </div>
+            <h3 class="quest-section-title">★ Квесты дня</h3>
+            <div id="dailyQuests" class="daily-quests-grid"></div>
+            <div class="daily-summary-card" id="dailySummaryCard">
+                <div class="daily-rank-display">
+                    <span class="daily-rank-emoji" id="dailyRankEmoji">😴</span>
+                    <div class="daily-rank-name" id="dailyRankName" style="color: #6a6a7a;">AFK</div>
+                </div>
+                <div class="daily-rank-xp-label">XP за сегодня</div>
+                <div class="daily-rank-xp" id="dailyTotalXP">0</div>
+                <div class="daily-stats-list" id="dailyStatsList"></div>
+            </div>
+            <div class="daily-analysis-section">
+                <h3 class="daily-analysis-title">Анализ дня</h3>
+                <div id="previousDayConclusions" class="previous-day-conclusions" style="display:none;">
+                    <div class="previous-day-conclusions-title">📌 Выводы из вчерашнего дня:</div>
+                    <div id="previousDayConclusionsText" class="previous-day-conclusions-text"></div>
+                </div>
+                <div class="analysis-form">
+                    <div class="analysis-field">
+                        <label class="analysis-label">Какие успехи были сегодня?</label>
+                        <textarea id="dailyAchievements" class="analysis-textarea" placeholder="Например: сходил в зал, закрыл задачу по проекту, прочитал 20 страниц..."></textarea>
+                    </div>
+                    <div class="analysis-field">
+                        <label class="analysis-label">Что у меня не получилось сегодня?</label>
+                        <textarea id="dailyFailures" class="analysis-textarea" placeholder="Например: залип в телефон, пропустил тренировку, не выспался..."></textarea>
+                    </div>
+                    <div class="analysis-field">
+                        <label class="analysis-label">Выводы/мысли на завтра и в целом, инсайты дня.</label>
+                        <textarea id="dailyConclusions" class="analysis-textarea large" placeholder="Например: завтра встану в 7:00, начну день без телефона, первым делом — тренировка..."></textarea>
+                    </div>
+                    <button class="btn-save-analysis" onclick="saveDailyAnalysis()">💾 Сохранить анализ дня</button>
+                    <div id="dailyAnalysisSaved" class="analysis-saved-message" style="display:none;">✅ Анализ сохранён!</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="weekly" class="page-section">
+            <div class="weekly-plan-container">
+                <div class="weekly-header">
+                    <h2 class="weekly-title">📆 Недельный план</h2>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <button class="btn-refresh-systems" onclick="refreshSystemsInWeeklyPlan()">🔄 Обновить системы</button>
+                        <button class="btn-sort-by-time" onclick="sortWeeklyPlanByTime()">⏰ Сортировать по времени</button>
+                        <button class="btn-sync-calendar" onclick="openCalendarSyncModal()">📅 Синхронизировать с Google Календарём</button>
+                        <div class="week-navigation">
+                            <button class="week-nav-btn" onclick="changeWeek(-1)">←</button>
+                            <span class="week-label" id="weekLabel"></span>
+                            <button class="week-nav-btn" onclick="changeWeek(1)">→</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="setWeeklyView('days')" id="view-days">По дням</button>
+                    <button class="view-toggle-btn" onclick="setWeeklyView('summary')" id="view-summary">📈 Итог недели</button>
+                    <button class="view-toggle-btn" onclick="setWeeklyView('analysis')" id="view-analysis">📊 Анализ</button>
+                </div>
+                <div id="weeklyContent"></div>
+                <div class="weekly-summary-card" id="weeklySummaryCard" style="display:none;">
+                    <div class="weekly-date-range" id="weeklyDateRange">1.01 - 7.01</div>
+                    <div class="daily-rank-display">
+                        <span class="daily-rank-emoji" id="weeklyRankEmoji">😴</span>
+                        <div class="daily-rank-name" id="weeklyRankName" style="color: #6a6a7a;">AFK</div>
+                    </div>
+                    <div class="daily-rank-xp-label">XP за неделю</div>
+                    <div class="daily-rank-xp" id="weeklyTotalXP">0</div>
+                    <div class="weekly-stats-extended">
+                        <div class="weekly-stat-box">
+                            <div class="weekly-stat-box-label">Квестов выполнено</div>
+                            <div class="weekly-stat-box-value" id="weeklyQuestsDone">0/0</div>
+                        </div>
+                        <div class="weekly-stat-box">
+                            <div class="weekly-stat-box-label">Задач выполнено</div>
+                            <div class="weekly-stat-box-value" id="weeklyTasksDone">0/0</div>
+                        </div>
+                    </div>
+                    <div class="weekly-best-worst">
+                        <div class="weekly-extreme-stat best">
+                            <div class="weekly-extreme-label best">🏆 Лучшая характеристика</div>
+                            <div id="weeklyBestStat">—</div>
+                        </div>
+                        <div class="weekly-extreme-stat worst">
+                            <div class="weekly-extreme-label worst">📉 Требует внимания</div>
+                            <div id="weeklyWorstStat">—</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="weeklyAnalysisSection" class="weekly-analysis-section" style="display:none;">
+                    <h3 class="weekly-analysis-title">Анализ недели</h3>
+                    <div class="analysis-form">
+                        <div class="analysis-field">
+                            <label class="analysis-label">Что получилось хорошо за эту неделю?</label>
+                            <textarea id="weeklySuccess" class="analysis-textarea" placeholder="Опиши успехи и достижения этой недели..."></textarea>
+                        </div>
+                        <div class="analysis-field">
+                            <label class="analysis-label">Какие системы/привычки сработали, а какие стоит убрать или заменить?</label>
+                            <textarea id="weeklySystems" class="analysis-textarea" placeholder="Какие рутины были эффективны? Какие стоит отменить?"></textarea>
+                        </div>
+                        <div class="analysis-field">
+                            <label class="analysis-label">Что добавить или изменить? Выводы на следующую неделю.</label>
+                            <textarea id="weeklyChanges" class="analysis-textarea large" placeholder="Новые идеи, изменения в распорядке, баланс работы и отдыха..."></textarea>
+                        </div>
+                        <button class="btn-save-analysis" onclick="saveWeeklyAnalysis()">💾 Сохранить анализ недели</button>
+                        <div id="weeklyAnalysisSaved" class="analysis-saved-message" style="display:none;">✅ Анализ недели сохранён!</div>
+                    </div>
+                    <div class="weekly-analysis-history">
+                        <h4 class="weekly-analysis-history-title">📚 История анализов недель</h4>
+                        <div id="weeklyAnalysisHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="goals" class="page-section">
+            <div class="goals-container">
+                <div class="vision-section">
+                    <h2 class="vision-title">✨ Мой уровень 100</h2>
+                    <p style="color:var(--text-secondary);margin-bottom:15px;font-size:0.9rem">Опиши здесь свою идеальную жизнь, когда достигнешь максимального уровня.</p>
+                    <textarea id="visionText" class="vision-textarea" placeholder="Введи своё вдохновляющее видение будущего...
+
+Например:
+• Я живу в своём доме у моря
+• У меня успешный бизнес
+• Я в отличной физической форме
+• Я путешествую по миру"></textarea>
+                    <button class="btn-save-vision" onclick="saveVision()">💾 Сохранить видение</button>
+                </div>
+                <div class="goals-list-section">
+                    <h2 class="goals-list-title">🎯 Мои цели</h2>
+                    <button class="btn-add-goal" onclick="openCreateGoalModal()">+ Добавить цель</button>
+                    <div id="goalsList"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="journal" class="page-section">
+            <div class="journal-container">
+                <h2 class="journal-title">Журнал анализов</h2>
+                <div class="journal-subtabs">
+                    <button class="journal-subtab active" onclick="setJournalTab('day')" id="journal-tab-day">📅 Анализы дней</button>
+                    <button class="journal-subtab" onclick="setJournalTab('week')" id="journal-tab-week">📆 Анализы недель</button>
+                </div>
+                <div id="journalDayContent" class="journal-content active">
+                    <div id="journalDayList"></div>
+                </div>
+                <div id="journalWeekContent" class="journal-content">
+                    <div id="journalWeekList"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="laws" class="page-section">
+            <div class="laws-container">
+                <h2 class="laws-title">⚡ Законы победителей</h2>
+                <p class="laws-subtitle">11 принципов, которые отделяют победителей от остальных</p>
+                <div class="laws-list">
+                    <div class="law-accordion" data-law="1"><div class="law-header" onclick="toggleLaw(1)"><span class="law-number">Закон 1</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Всё, чего ты хочешь достичь, ждёт тебя в работе сегодня!</p></div></div>
+                    <div class="law-accordion" data-law="2"><div class="law-header" onclick="toggleLaw(2)"><span class="law-number">Закон 2</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Мужчина делает то, что должно быть сделано, несмотря на то, как он себя чувствует.</p></div></div>
+                    <div class="law-accordion" data-law="3"><div class="law-header" onclick="toggleLaw(3)"><span class="law-number">Закон 3</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Ясность только в действии.</p></div></div>
+                    <div class="law-accordion" data-law="4"><div class="law-header" onclick="toggleLaw(4)"><span class="law-number">Закон 4</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Ты не был создан для комфорта.</p></div></div>
+                    <div class="law-accordion" data-law="5"><div class="law-header" onclick="toggleLaw(5)"><span class="law-number">Закон 5</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Каждая сложная ситуация — это вызов, который ты должен разнести, чтобы стать сильнее.</p></div></div>
+                    <div class="law-accordion" data-law="6"><div class="law-header" onclick="toggleLaw(6)"><span class="law-number">Закон 6</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Ты не ждёшь идеального времени, бизнеса или плана. Ты делаешь всё, что может быть сделано СЕГОДНЯ.</p></div></div>
+                    <div class="law-accordion" data-law="7"><div class="law-header" onclick="toggleLaw(7)"><span class="law-number">Закон 7</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Ты обречён быть рабом своих привычек. Поэтому будь в рабстве у привычек, которые тебя строят.</p></div></div>
+                    <div class="law-accordion" data-law="8"><div class="law-header" onclick="toggleLaw(8)"><span class="law-number">Закон 8</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Твой уровень жизни — это результат твоих ежедневных решений и действий.</p></div></div>
+                    <div class="law-accordion" data-law="9"><div class="law-header" onclick="toggleLaw(9)"><span class="law-number">Закон 9</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Время всегда есть до рассвета.</p></div></div>
+                    <div class="law-accordion" data-law="10"><div class="law-header" onclick="toggleLaw(10)"><span class="law-number">Закон 10</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Когда вдохновение заканчивается, начинается НАСТОЯЩАЯ работа.</p></div></div>
+                    <div class="law-accordion" data-law="11"><div class="law-header" onclick="toggleLaw(11)"><span class="law-number">Закон 11</span><span class="law-toggle">▼</span></div><div class="law-body"><p class="law-text">Процесс важнее результата. Сфокусируйся на процессе и результат сам позаботится о себе.</p></div></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="createGoalModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">🎯 Новая цель</h3>
+            <form id="createGoalForm" onsubmit="saveNewGoal(event)">
+                <div class="form-group"><label class="form-label">Название цели</label><input type="text" id="newGoalTitle" class="form-input" placeholder="накачаться" required></div>
+                <div class="form-group"><label class="form-label">Зачем мне эта цель <span style="color:var(--text-muted);font-size:0.8rem;">(опционально)</span></label><textarea id="newGoalWhy" class="form-textarea" placeholder="Опиши, зачем тебе эта цель, что она тебе даст, кем ты станешь..."></textarea></div>
+                <div class="form-group"><label class="form-label">Дедлайн <span style="color:var(--text-muted);font-size:0.8rem;">(опционально)</span></label><input type="date" id="newGoalDeadline" class="form-input"></div>
+                <div class="form-actions"><button type="submit" class="btn-submit">💾 Создать цель</button><button type="button" class="btn-cancel" onclick="closeModal('createGoalModal')">Отмена</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="goalDetailModal" class="modal-overlay">
+        <div class="modal modal-large">
+            <h3 class="modal-title" id="goalDetailTitle">🎯 Цель</h3>
+            <div id="goalWhySection" style="display:none;margin-bottom:20px;padding:15px;background:rgba(0,212,255,0.1);border-left:3px solid var(--accent-blue);border-radius:0 8px 8px 0;"><div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">💡 Зачем мне эта цель</div><div id="goalWhyText" style="font-size:1rem;color:var(--text-primary);line-height:1.6;font-style:italic;"></div></div>
+            <div id="goalDeadlineSection" style="display:none;margin-bottom:20px;"><span style="color:var(--accent-red);font-size:0.95rem;font-weight:bold;">⏰ Дедлайн: <span id="goalDeadlineText"></span></span></div>
+            <div class="view-toggle" style="margin-bottom:20px;"><button class="view-toggle-btn active" onclick="setGoalTab('subgoals')" id="tab-subgoals">📋 Подцели</button><button class="view-toggle-btn" onclick="setGoalTab('systems')" id="tab-systems">⚙️ Системы</button></div>
+            <div id="subgoalsTab" class="goal-tab-content"><div id="subgoalsListDetail"></div><button type="button" class="btn-add-template" onclick="openCreateSubgoalModal()">+ Добавить подцель</button></div>
+            <div id="systemsTab" class="goal-tab-content" style="display:none;"><div id="systemsListDetail"></div><button type="button" class="btn-add-template" onclick="openAddSystemModal()">+ Добавить систему</button></div>
+            <div class="form-actions" style="margin-top:20px;"><button type="button" class="btn-cancel" onclick="closeModal('goalDetailModal')">Закрыть</button></div>
+        </div>
+    </div>
+
+    <div id="createSubgoalModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">📋 Новая подцель</h3>
+            <form id="createSubgoalForm" onsubmit="saveNewSubgoal(event)">
+                <div class="form-group"><label class="form-label">Название подцели</label><input type="text" id="newSubgoalTitle" class="form-input" placeholder="Например: Пробежать 5 км" required></div>
+                <div class="form-group"><label class="form-label">Зачем мне эта подцель <span style="color:var(--text-muted);font-size:0.8rem;">(опционально)</span></label><textarea id="newSubgoalWhy" class="form-textarea" placeholder="Опиши, зачем тебе эта подцель, как она приближает к главной цели..."></textarea></div>
+                <div class="form-group"><label class="form-label">Дедлайн <span style="color:var(--text-muted);font-size:0.8rem;">(опционально)</span></label><input type="date" id="newSubgoalDeadline" class="form-input"></div>
+                <div class="form-actions"><button type="submit" class="btn-submit">💾 Добавить подцель</button><button type="button" class="btn-cancel" onclick="closeModal('createSubgoalModal')">Отмена</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addSystemModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">⚙️ Новая система/рутина</h3>
+            <form id="addSystemForm" onsubmit="saveSystemToGoal(event)">
+                <div class="form-group"><label class="form-label">Название системы</label><input type="text" id="systemName" class="form-input" placeholder="Например: Утренняя тренировка" required></div>
+                <div class="form-group"><label class="form-label">Дни недели</label><div class="day-selector" id="systemDaysSelector"><span class="day-option" data-day="mon" onclick="toggleDay(this)">Пн</span><span class="day-option" data-day="tue" onclick="toggleDay(this)">Вт</span><span class="day-option" data-day="wed" onclick="toggleDay(this)">Ср</span><span class="day-option" data-day="thu" onclick="toggleDay(this)">Чт</span><span class="day-option" data-day="fri" onclick="toggleDay(this)">Пт</span><span class="day-option" data-day="sat" onclick="toggleDay(this)">Сб</span><span class="day-option" data-day="sun" onclick="toggleDay(this)">Вс</span></div></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">С</label><input type="time" id="systemTimeStart" class="form-input" required></div><div class="form-group"><label class="form-label">До</label><input type="time" id="systemTimeEnd" class="form-input"></div></div>
+                <div class="form-group"><label class="form-label">XP за выполнение</label><input type="number" id="systemXP" class="form-input" min="1" max="10" value="2" required></div>
+                <div class="form-group"><label class="form-label">Характеристика <span style="color:#ff4444">*</span></label><div class="day-selector" id="systemStatSelector"><span class="day-option" data-stat="telo" onclick="selectSystemStat(this)" style="border-color:#FF4444;color:#FF4444">💪 Тело</span><span class="day-option" data-stat="finansy" onclick="selectSystemStat(this)" style="border-color:#FFD700;color:#FFD700">💰 Финансы</span><span class="day-option" data-stat="intellekt" onclick="selectSystemStat(this)" style="border-color:#4488FF;color:#4488FF">🧠 Интеллект</span><span class="day-option" data-stat="volya" onclick="selectSystemStat(this)" style="border-color:#FF8800;color:#FF8800">🔥 Воля</span><span class="day-option" data-stat="harizma" onclick="selectSystemStat(this)" style="border-color:#FF44AA;color:#FF44AA">👥 Харизма</span><span class="day-option" data-stat="psihika" onclick="selectSystemStat(this)" style="border-color:#44DD88;color:#44DD88">🧘 Психика</span></div><input type="hidden" id="systemStat" required></div>
+                <div class="form-actions"><button type="submit" class="btn-submit">💾 Добавить систему</button><button type="button" class="btn-cancel" onclick="closeModal('addSystemModal')">Отмена</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- === NEW: Task Modal with End Time === -->
+    <div id="taskModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">📝 Новая задача</h3>
+            <form id="taskForm" onsubmit="saveTask(event)">
+                <input type="hidden" id="taskDay">
+                <div class="form-group"><label class="form-label">Название задачи</label><input type="text" id="taskTitle" class="form-input" placeholder="Например: Тренировка" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">С</label><input type="time" id="taskTimeStart" class="form-input" onchange="validateTaskTime()"></div>
+                    <div class="form-group"><label class="form-label">До</label><input type="time" id="taskTimeEnd" class="form-input" onchange="validateTaskTime()"></div>
+                </div>
+                <div id="taskTimeError" class="time-validation-error">Время окончания должно быть позже начала</div>
+                <div class="form-group"><label class="form-label">Тег</label><input type="text" id="taskTag" class="form-input" placeholder="Например: Работа"></div>
+                <div class="form-actions"><button type="submit" class="btn-submit">💾 Сохранить</button><button type="button" class="btn-cancel" onclick="closeModal('taskModal')">Отмена</button></div>
+            </form>
+        </div>
+    </div>
+    <!-- === END: Task Modal with End Time === -->
+
+    <div id="questModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="modal-title">⚔️ Редактировать квест</h3>
+            <form id="questForm" onsubmit="saveQuest(event)">
+                <input type="hidden" id="questId">
+                <div class="form-group"><label class="form-label">Название</label><input type="text" id="questTitle" class="form-input" required></div>
+                <div class="form-group"><label class="form-label">Описание</label><textarea id="questDescription" class="form-textarea"></textarea></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Характеристика</label><select id="questStat" class="form-select"><option value="telo">💪 Тело</option><option value="finansy">💰 Финансы</option><option value="intellekt">🧠 Интеллект</option><option value="volya">🔥 Воля / Дисциплина</option><option value="harizma">👥 Харизма / Социалка</option><option value="psihika">🧘 Психика / Внутренняя игра</option></select></div><div class="form-group"><label class="form-label">Сложность</label><select id="questDifficulty" class="form-select"><option value="easy">🟢 Лёгкая (+1-2 XP)</option><option value="medium">🔵 Средняя (+2-4 XP)</option><option value="hard">🔴 Сложная (+4-10 XP)</option></select></div></div>
+                <div class="form-group"><label class="form-label">XP награда</label><input type="number" id="questXP" class="form-input" min="1" max="10" value="1"></div>
+                <div class="form-actions"><button type="submit" class="btn-submit">💾 Сохранить</button><button type="button" class="btn-cancel" onclick="closeModal('questModal')">Отмена</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="templateModal" class="modal-overlay">
+        <div class="modal modal-large">
+            <h3 class="modal-title">⚙️ Управление шаблонами квестов</h3>
+            <div class="template-list" id="templateList"></div>
+            <button class="btn-add-template" onclick="addNewTemplate()">+ Добавить новый шаблон</button>
+            <div style="margin-top:20px;text-align:center;"><button class="btn-cancel" onclick="closeModal('templateModal')">Закрыть</button></div>
+        </div>
+    </div>
+
+    <!-- === NEW: Google Calendar Sync Modal === -->
+    <div id="calendarSyncModal" class="modal-overlay">
+        <div class="modal modal-large">
+            <div class="calendar-modal-header">
+                <h3 class="modal-title">📅 Синхронизация с Google Календарём</h3>
+                <button class="calendar-modal-close" onclick="closeModal('calendarSyncModal')">✕</button>
+            </div>
+            <div class="calendar-warning">После добавления откройте событие в Google Календаре и установите напоминания: за 30 минут и за 5 минут до начала.</div>
+            <div id="calendarSyncTaskList"></div>
+            <button class="btn-add-all-calendar" onclick="addAllToCalendar()">📅 Добавить всё сразу</button>
+        </div>
+    </div>
+    <!-- === END: Google Calendar Sync Modal === -->
+
+    <!-- === NEW: Widget Hint Toast === -->
+    <div id="widgetToast" class="widget-toast" onclick="hideWidgetToast()">
+        <div class="widget-toast-text">💡 Совет: добавь виджет Google Календаря на рабочий стол — и твой план всегда будет перед глазами!</div>
+    </div>
+    <!-- === END: Widget Hint Toast === -->
+
+    <!-- === NEW: Notification Permission Popup === -->
+    <div id="notificationPopup" class="notification-popup-overlay">
+        <div class="notification-popup">
+            <div class="notification-popup-icon">🔔</div>
+            <div class="notification-popup-title">Разреши уведомления</div>
+            <div class="notification-popup-text">Чтобы напоминать тебе о задачах вовремя, приложению нужен доступ к уведомлениям</div>
+            <div class="notification-popup-buttons">
+                <button class="btn-notification-allow" onclick="allowNotifications()">Разрешить</button>
+                <button class="btn-notification-later" onclick="dismissNotificationPopup()">Позже</button>
+            </div>
+        </div>
+    </div>
+    <!-- === END: Notification Permission Popup === -->
+
+    <div id="levelUpOverlay" class="level-up-overlay"><div class="level-up-text">НОВЫЙ УРОВЕНЬ!</div><div class="level-up-subtext">Новый уровень: <span id="newLevel">1</span></div></div>
+    <div id="charLevelUpOverlay" class="levelup-animation-overlay"><div class="levelup-title">⚔️ НОВЫЙ УРОВЕНЬ! ⚔️</div><div class="levelup-level" id="charLevelUpLevel">Уровень 1</div><div class="levelup-rank" id="charLevelUpRank"></div></div>
+    <div id="motivationOverlay" class="motivation-overlay"><div class="motivation-ring"></div><div class="motivation-particles" id="motivationParticles"></div><div class="motivation-content"><div class="motivation-text" id="motivationText"></div></div></div>
+
+
+<script>
+// ============================================
+// CHARACTER & STATS SYSTEM
+// ============================================
+const CHARACTER_RANKS = {
+    1: { name: 'Новичок', emoji: '🟢', color: '#44DD88', xpPerLevel: 15 },
+    10: { name: 'Адепт', emoji: '🟡', color: '#FFD700', xpPerLevel: 20 },
+    25: { name: 'Эксперт', emoji: '🔵', color: '#4488FF', xpPerLevel: 25 },
+    50: { name: 'Мастер', emoji: '🟣', color: '#9d4edd', xpPerLevel: 30 },
+    75: { name: 'Легенда', emoji: '🟠', color: '#FF8800', xpPerLevel: 35 },
+    100: { name: 'Бог', emoji: '🔴', color: '#FF4444', xpPerLevel: 40 }
+};
+
+const STAT_NAMES = { telo: 'Тело', finansy: 'Финансы', intellekt: 'Интеллект', volya: 'Воля', harizma: 'Харизма', psihika: 'Психика' };
+const STAT_ICONS = { telo: '💪', finansy: '💰', intellekt: '🧠', volya: '🔥', harizma: '👥', psihika: '🧘' };
+const STAT_COLORS = { telo: '#FF4444', finansy: '#FFD700', intellekt: '#4488FF', volya: '#FF8800', harizma: '#FF44AA', psihika: '#44DD88' };
+
+function getCharacterRank(level) {
+    const thresholds = Object.keys(CHARACTER_RANKS).map(Number).sort((a, b) => b - a);
+    for (const threshold of thresholds) {
+        if (level >= threshold) return { ...CHARACTER_RANKS[threshold], level: threshold };
+    }
+    return { ...CHARACTER_RANKS[1], level: 1 };
+}
+
+function getCharLevelProgress(characterLevel, totalXP) {
+    const rank = getCharacterRank(characterLevel);
+    const xpForCurrentLevel = (characterLevel - rank.level) * rank.xpPerLevel;
+    const xpInCurrentLevel = totalXP - (rank.level * 15 + (characterLevel - rank.level) * rank.xpPerLevel);
+    const xpNeeded = rank.xpPerLevel;
+    const progress = Math.min(100, Math.max(0, (xpInCurrentLevel / xpNeeded) * 100));
+    return { progress, xpInCurrentLevel, xpNeeded, rank };
+}
+
+function updateCharacterLevelDisplay() {
+    const data = loadData();
+    const totalXP = Object.values(data.stats).reduce((sum, val) => sum + val, 0);
+    const characterLevel = data.characterLevel || 1;
+    const { progress, xpInCurrentLevel, xpNeeded, rank } = getCharLevelProgress(characterLevel, totalXP);
+    const rankEl = document.getElementById('charLevelRank');
+    const barEl = document.getElementById('charLevelBar');
+    const textEl = document.getElementById('charLevelText');
+    if (rankEl) { rankEl.textContent = `${rank.emoji} ${rank.name} — Уровень ${characterLevel}`; rankEl.style.color = rank.color; }
+    if (barEl) { barEl.style.width = `${progress}%`; barEl.style.background = `linear-gradient(90deg, ${rank.color}, ${rank.color}dd)`; }
+    if (textEl) textEl.textContent = `${Math.floor(xpInCurrentLevel)} / ${xpNeeded} XP до уровня ${characterLevel + 1}`;
+}
+
+// ============================================
+// DAILY LEVEL SYSTEM
+// ============================================
+const DAILY_LEVELS = [
+    { min: 0, max: 0, name: 'AFK', emoji: '😴', color: '#6a6a7a' },
+    { min: 1, max: 5, name: 'Пробуждение', emoji: '🌅', color: '#44DD88' },
+    { min: 6, max: 10, name: 'Начало пути', emoji: '👣', color: '#66e4a0' },
+    { min: 11, max: 15, name: 'Первые шаги', emoji: '🚶', color: '#88e8b0' },
+    { min: 16, max: 20, name: 'Ученик', emoji: '📚', color: '#4488FF' },
+    { min: 21, max: 25, name: 'Трудяга', emoji: '💪', color: '#669fff' },
+    { min: 26, max: 30, name: 'Искатель', emoji: '🔍', color: '#88b5ff' },
+    { min: 31, max: 35, name: 'Боец', emoji: '⚔️', color: '#FFD700' },
+    { min: 36, max: 40, name: 'Воин', emoji: '🛡️', color: '#ffe44d' },
+    { min: 41, max: 45, name: 'Мастер', emoji: '🏆', color: '#FF8800' },
+    { min: 46, max: 50, name: 'Герой', emoji: '👑', color: '#ffaa33' },
+    { min: 51, max: 55, name: 'Легенда', emoji: '🌟', color: '#FF44AA' },
+    { min: 56, max: 60, name: 'Полубог', emoji: '⚡', color: '#ff66bb' },
+    { min: 61, max: 65, name: 'Монарх', emoji: '🐉', color: '#9d4edd' },
+    { min: 66, max: 70, name: 'Бог', emoji: '👁️', color: '#b57eec' },
+    { min: 71, max: 75, name: 'Создатель', emoji: '🌌', color: '#FF4444' },
+    { min: 76, max: 80, name: 'Верховный', emoji: '🔥', color: '#ff6666' },
+    { min: 81, max: 85, name: 'Абсолют', emoji: '💎', color: '#00f5d4' },
+    { min: 86, max: 90, name: 'Безграничный', emoji: '♾️', color: '#00d4ff' },
+    { min: 91, max: 95, name: 'Всесильный', emoji: '✨', color: '#00ffff' },
+    { min: 96, max: 100, name: 'Единственный', emoji: '👁️‍🗨️', color: '#ffffff' }
+];
+
+function getDailyLevel(xp) {
+    for (const level of DAILY_LEVELS) {
+        if (xp >= level.min && xp <= level.max) return level;
+    }
+    return DAILY_LEVELS[DAILY_LEVELS.length - 1];
+}
+
+// ============================================
+// DATA MANAGEMENT
+// ============================================
+const STORAGE_KEY = 'gameChangerData';
+
+function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        const data = JSON.parse(saved);
+        if (!data.stats) data.stats = { telo: 10, finansy: 10, intellekt: 10, volya: 10, harizma: 10, psihika: 10 };
+        if (!data.dailyQuests) data.dailyQuests = [];
+        if (!data.weeklyPlan) data.weeklyPlan = {};
+        if (!data.goals) data.goals = [];
+        if (!data.questTemplates) data.questTemplates = getDefaultTemplates();
+        if (!data.vision) data.vision = '';
+        if (!data.dailyAnalyses) data.dailyAnalyses = {};
+        if (!data.weeklyAnalyses) data.weeklyAnalyses = {};
+        if (!data.streak) data.streak = { current: 0, record: 0, lastActiveDate: null };
+        if (!data.characterLevel) data.characterLevel = 1;
+        if (!data.questCompletions) data.questCompletions = {};
+        if (!data.taskCompletions) data.taskCompletions = {};
+        return data;
+    }
+    return {
+        stats: { telo: 10, finansy: 10, intellekt: 10, volya: 10, harizma: 10, psihika: 10 },
+        dailyQuests: [],
+        weeklyPlan: {},
+        goals: [],
+        questTemplates: getDefaultTemplates(),
+        vision: '',
+        dailyAnalyses: {},
+        weeklyAnalyses: {},
+        streak: { current: 0, record: 0, lastActiveDate: null },
+        characterLevel: 1,
+        questCompletions: {},
+        taskCompletions: {}
+    };
+}
+
+function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDefaultTemplates() {
+    return {
+        telo: [
+            { title: 'Тренировка', description: 'Сделать комплекс упражнений или сходить в зал', difficulty: 'medium', xp: 3 },
+            { title: 'Пробежка', description: 'Пробежать 3-5 км', difficulty: 'medium', xp: 3 },
+            { title: 'Зарядка', description: 'Утренняя зарядка 15 минут', difficulty: 'easy', xp: 1 },
+            { title: 'Правильное питание', description: 'Соблюдать план питания весь день', difficulty: 'medium', xp: 2 }
+        ],
+        finansy: [
+            { title: 'Финансовый анализ', description: 'Проверить бюджет и расходы', difficulty: 'easy', xp: 1 },
+            { title: 'Инвестиции', description: 'Изучить новую инвестиционную возможность', difficulty: 'medium', xp: 2 },
+            { title: 'Дополнительный доход', description: 'Работа над side-project', difficulty: 'hard', xp: 5 }
+        ],
+        intellekt: [
+            { title: 'Чтение', description: 'Прочитать 20 страниц книги', difficulty: 'easy', xp: 1 },
+            { title: 'Изучение нового', description: 'Пройти урок или посмотреть обучающее видео', difficulty: 'medium', xp: 2 },
+            { title: 'Практика навыка', description: '30 минут практики нового навыка', difficulty: 'medium', xp: 2 }
+        ],
+        volya: [
+            { title: 'Ранний подъем', description: 'Встать в 6:00', difficulty: 'medium', xp: 2 },
+            { title: 'Медитация', description: '10 минут медитации', difficulty: 'easy', xp: 1 },
+            { title: 'Холодный душ', description: 'Принять контрастный душ', difficulty: 'easy', xp: 1 },
+            { title: 'Отказ от вредной привычки', description: 'День без прокрастинации', difficulty: 'hard', xp: 4 }
+        ],
+        harizma: [
+            { title: 'Социальное взаимодействие', description: 'Познакомиться с новым человеком', difficulty: 'medium', xp: 2 },
+            { title: 'Публичное выступление', description: 'Выступить перед аудиторией', difficulty: 'hard', xp: 5 },
+            { title: 'Помощь другому', description: 'Помочь кому-то безвозмездно', difficulty: 'easy', xp: 1 }
+        ],
+        psihika: [
+            { title: 'Благодарность', description: 'Написать 3 вещи, за которые благодарен', difficulty: 'easy', xp: 1 },
+            { title: 'Визуализация', description: '10 минут визуализации целей', difficulty: 'medium', xp: 2 },
+            { title: 'Дневник', description: 'Записать мысли и чувства', difficulty: 'easy', xp: 1 },
+            { title: 'Цифровой детокс', description: 'День без соцсетей', difficulty: 'hard', xp: 4 }
+        ]
+    };
+}
+
+// ============================================
+// AVATAR SYSTEM
+// ============================================
+const AVATAR_LEVELS = {
+    1: 'https://api.dicebear.com/7.x/avataaars/svg?seed=beginner&clothing=blazerAndShirt&eyebrows=default&eyes=default&mouth=default&skinColor=light',
+    10: 'https://api.dicebear.com/7.x/avataaars/svg?seed=adept&clothing=blazerAndSweater&eyebrows=default&eyes=default&mouth=smile&skinColor=light',
+    25: 'https://api.dicebear.com/7.x/avataaars/svg?seed=expert&clothing=collarAndSweater&eyebrows=raised&eyes=default&mouth=smile&skinColor=light',
+    50: 'https://api.dicebear.com/7.x/avataaars/svg?seed=master&clothing=graphicShirt&eyebrows=angry&eyes=default&mouth=serious&skinColor=light',
+    75: 'https://api.dicebear.com/7.x/avataaars/svg?seed=legend&clothing=hoodie&eyebrows=angry&eyes=surprised&mouth=serious&skinColor=light',
+    100: 'https://api.dicebear.com/7.x/avataaars/svg?seed=god&clothing=overall&eyebrows=angry&eyes=surprised&mouth=serious&skinColor=light'
+};
+
+function getAvatarUrl(level) {
+    const thresholds = Object.keys(AVATAR_LEVELS).map(Number).sort((a, b) => b - a);
+    for (const threshold of thresholds) {
+        if (level >= threshold) return AVATAR_LEVELS[threshold];
+    }
+    return AVATAR_LEVELS[1];
+}
+
+function updateAvatar() {
+    const data = loadData();
+    const avatarImg = document.getElementById('avatarImage');
+    if (avatarImg) avatarImg.src = getAvatarUrl(data.characterLevel);
+}
+
+// ============================================
+// STATS DISPLAY
+// ============================================
+function updateStatsDisplay() {
+    const data = loadData();
+    for (const [stat, value] of Object.entries(data.stats)) {
+        const valueEl = document.getElementById(`stat-${stat}`);
+        const barEl = document.getElementById(`bar-${stat}`);
+        if (valueEl) valueEl.textContent = value;
+        if (barEl) {
+            const maxStat = Math.max(...Object.values(data.stats));
+            const percentage = Math.min(100, (value / Math.max(maxStat, 50)) * 100);
+            barEl.style.setProperty('--target-width', `${percentage}%`);
+            barEl.classList.add('animated');
+        }
+    }
+    updateCharacterLevelDisplay();
+    updateAvatar();
+}
+
+function showXPPopup(stat, xp) {
+    const statItem = document.querySelector(`.stat-${stat}`);
+    if (!statItem) return;
+    let popup = statItem.querySelector('.xp-popup');
+    if (!popup) {
+        popup = document.createElement('div');
+        popup.className = 'xp-popup';
+        statItem.appendChild(popup);
+    }
+    popup.textContent = `+${xp} XP`;
+    popup.classList.remove('show');
+    void popup.offsetWidth;
+    popup.classList.add('show');
+}
+
+// ============================================
+// STREAK SYSTEM
+// ============================================
+function updateStreak() {
+    const data = loadData();
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const lastActive = data.streak.lastActiveDate;
+    if (lastActive === today) return;
+    if (lastActive === yesterday) {
+        data.streak.current++;
+        if (data.streak.current > data.streak.record) data.streak.record = data.streak.current;
+    } else if (lastActive !== today) {
+        data.streak.current = 1;
+    }
+    data.streak.lastActiveDate = today;
+    saveData(data);
+    renderStreak();
+}
+
+function renderStreak() {
+    const data = loadData();
+    const streakDisplay = document.getElementById('streakDisplay');
+    const streakRecord = document.getElementById('streakRecord');
+    if (streakDisplay) {
+        streakDisplay.textContent = `🔥 ${data.streak.current} дней подряд`;
+        streakDisplay.className = 'streak-main';
+        if (data.streak.current >= 30) streakDisplay.classList.add('milestone-30');
+        else if (data.streak.current >= 7) streakDisplay.classList.add('milestone-7');
+    }
+    if (streakRecord) streakRecord.textContent = `Рекорд: ${data.streak.record} дней`;
+}
+
+// ============================================
+// LEVEL UP ANIMATION
+// ============================================
+function showLevelUpAnimation(newLevel) {
+    const overlay = document.getElementById('charLevelUpOverlay');
+    const levelEl = document.getElementById('charLevelUpLevel');
+    const rankEl = document.getElementById('charLevelUpRank');
+    const rank = getCharacterRank(newLevel);
+    if (levelEl) levelEl.textContent = `Уровень ${newLevel}`;
+    if (rankEl) {
+        rankEl.textContent = `${rank.emoji} ${rank.name}`;
+        rankEl.style.color = rank.color;
+    }
+    overlay.classList.add('active');
+    setTimeout(() => {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+            overlay.classList.remove('active', 'fade-out');
+        }, 500);
+    }, 1500);
+}
+
+function checkCharacterLevelUp() {
+    const data = loadData();
+    const totalXP = Object.values(data.stats).reduce((sum, val) => sum + val, 0);
+    const oldLevel = data.characterLevel;
+    const newLevel = Math.floor(totalXP / 15) + 1;
+    if (newLevel > oldLevel) {
+        data.characterLevel = newLevel;
+        saveData(data);
+        showLevelUpAnimation(newLevel);
+        updateCharacterLevelDisplay();
+        updateAvatar();
+    }
+}
+
+// ============================================
+// MOTIVATION OVERLAY
+// ============================================
+function showMotivation(text) {
+    const overlay = document.getElementById('motivationOverlay');
+    const textEl = document.getElementById('motivationText');
+    const particles = document.getElementById('motivationParticles');
+    textEl.textContent = text;
+    particles.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'motivation-particle';
+        const angle = (i / 20) * Math.PI * 2;
+        const distance = 150 + Math.random() * 100;
+        const tx = Math.cos(angle) * distance + 'px';
+        const ty = Math.sin(angle) * distance + 'px';
+        particle.style.setProperty('--tx', tx);
+        particle.style.setProperty('--ty', ty);
+        particle.style.left = '50%';
+        particle.style.top = '50%';
+        particles.appendChild(particle);
+    }
+    overlay.classList.add('active');
+    setTimeout(() => {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+            overlay.classList.remove('active', 'fade-out');
+        }, 500);
+    }, 2000);
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+function initNavigation() {
+    const tabs = document.querySelectorAll('.nav-tab');
+    const sections = document.querySelectorAll('.page-section');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const pageId = tab.dataset.page;
+            tabs.forEach(t => t.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(pageId).classList.add('active');
+            if (pageId === 'daily') renderDailyQuests();
+            if (pageId === 'weekly') renderWeeklyPlan();
+            if (pageId === 'goals') renderGoals();
+            if (pageId === 'journal') renderJournal();
+        });
+    });
+}
+
+// ============================================
+// DAILY QUESTS
+// ============================================
+function getTodayDateString() {
+    return new Date().toDateString();
+}
+
+function getTodayQuests() {
+    const data = loadData();
+    const today = getTodayDateString();
+    if (!data.dailyQuestsDate || data.dailyQuestsDate !== today) {
+        data.dailyQuestsDate = today;
+        data.dailyQuests = [];
+        saveData(data);
+        return [];
+    }
+    return data.dailyQuests || [];
+}
+
+function saveTodayQuests(quests) {
+    const data = loadData();
+    data.dailyQuests = quests;
+    data.dailyQuestsDate = getTodayDateString();
+    saveData(data);
+}
+
+function getTodayXP() {
+    const quests = getTodayQuests();
+    return quests.filter(q => q.completed).reduce((sum, q) => sum + (q.xp || 1), 0);
+}
+
+function getTodayXPByStat() {
+    const quests = getTodayQuests();
+    const xpByStat = {};
+    quests.filter(q => q.completed).forEach(q => {
+        xpByStat[q.stat] = (xpByStat[q.stat] || 0) + (q.xp || 1);
+    });
+    return xpByStat;
+}
+
+function updateDailyLevelDisplay() {
+    const todayXP = getTodayXP();
+    const level = getDailyLevel(todayXP);
+    const badge = document.getElementById('dailyLevelBadge');
+    const xpDisplay = document.getElementById('todayXP');
+    const rankEmoji = document.getElementById('dailyRankEmoji');
+    const rankName = document.getElementById('dailyRankName');
+    const totalXP = document.getElementById('dailyTotalXP');
+    const statsList = document.getElementById('dailyStatsList');
+    if (badge) {
+        badge.textContent = `${level.emoji} ${level.name}`;
+        badge.style.background = `linear-gradient(135deg, ${level.color}, ${level.color}dd)`;
+    }
+    if (xpDisplay) xpDisplay.textContent = todayXP;
+    if (rankEmoji) {
+        rankEmoji.textContent = level.emoji;
+        rankEmoji.style.color = level.color;
+        rankEmoji.className = 'daily-rank-emoji';
+        if (level.name === 'AFK') rankEmoji.classList.add('rank-afk');
+    }
+    if (rankName) {
+        rankName.textContent = level.name;
+        rankName.style.color = level.color;
+    }
+    if (totalXP) totalXP.textContent = todayXP;
+    if (statsList) {
+        const xpByStat = getTodayXPByStat();
+        statsList.innerHTML = Object.entries(STAT_NAMES).map(([stat, name]) => {
+            const xp = xpByStat[stat] || 0;
+            return `<div class="daily-stat-row"><div class="daily-stat-circle" style="background:${STAT_COLORS[stat]}"></div><div class="daily-stat-name">${STAT_ICONS[stat]} ${name}</div><div class="daily-stat-xp ${xp === 0 ? 'zero' : ''}">${xp > 0 ? '+' : ''}${xp} XP</div></div>`;
+        }).join('');
+    }
+}
+
+function renderDailyQuests() {
+    const quests = getTodayQuests();
+    const container = document.getElementById('dailyQuests');
+    const currentDate = document.getElementById('currentDate');
+    if (currentDate) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        currentDate.textContent = new Date().toLocaleDateString('ru-RU', options);
+    }
+    if (quests.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">Выбери характеристики и сгенерируй квесты для сегодняшнего дня!</div></div>';
+        updateDailyLevelDisplay();
+        return;
+    }
+    container.innerHTML = quests.map((quest, index) => `
+        <div class="quest-card ${quest.completed ? 'completed' : ''}">
+            <div class="quest-header">
+                <span class="quest-stat-badge" style="background:${STAT_COLORS[quest.stat]}20;color:${STAT_COLORS[quest.stat]}">${STAT_ICONS[quest.stat]} ${STAT_NAMES[quest.stat]}</span>
+                <span class="quest-difficulty difficulty-${quest.difficulty}">${quest.difficulty === 'easy' ? '🟢 Лёгкая' : quest.difficulty === 'medium' ? '🔵 Средняя' : '🔴 Сложная'}</span>
+            </div>
+            <h4 class="quest-title">${quest.title}</h4>
+            <p class="quest-description">${quest.description}</p>
+            <div class="quest-reward">⭐ +${quest.xp || 1} XP</div>
+            <div class="quest-actions">
+                <button class="btn-complete" onclick="completeQuest(${index})">${quest.completed ? '✓ Выполнено' : '✓ Выполнить'}</button>
+                <button class="btn-swap" onclick="swapQuest(${index})">🔄 Заменить</button>
+                <button class="btn-edit-quest" onclick="editQuest(${index})">✏️</button>
+            </div>
+        </div>
+    `).join('');
+    updateDailyLevelDisplay();
+}
+
+function completeQuest(index) {
+    const quests = getTodayQuests();
+    if (quests[index].completed) return;
+    quests[index].completed = true;
+    saveTodayQuests(quests);
+    const data = loadData();
+    const quest = quests[index];
+    data.stats[quest.stat] += quest.xp || 1;
+    saveData(data);
+    showXPPopup(quest.stat, quest.xp || 1);
+    updateStatsDisplay();
+    updateStreak();
+    checkCharacterLevelUp();
+    renderDailyQuests();
+    showMotivation('LEGENDARY!');
+}
+
+function swapQuest(index) {
+    const quests = getTodayQuests();
+    const quest = quests[index];
+    const data = loadData();
+    const templates = data.questTemplates[quest.stat];
+    const available = templates.filter(t => !quests.some(q => q.title === t.title && q.stat === quest.stat));
+    if (available.length === 0) {
+        alert('Нет доступных квестов для замены в этой категории!');
+        return;
+    }
+    const newQuest = available[Math.floor(Math.random() * available.length)];
+    quests[index] = { ...newQuest, stat: quest.stat, completed: false };
+    saveTodayQuests(quests);
+    renderDailyQuests();
+}
+
+function editQuest(index) {
+    const quests = getTodayQuests();
+    const quest = quests[index];
+    document.getElementById('questId').value = index;
+    document.getElementById('questTitle').value = quest.title;
+    document.getElementById('questDescription').value = quest.description;
+    document.getElementById('questStat').value = quest.stat;
+    document.getElementById('questDifficulty').value = quest.difficulty;
+    document.getElementById('questXP').value = quest.xp || 1;
+    document.getElementById('questModal').classList.add('active');
+}
+
+function saveQuest(event) {
+    event.preventDefault();
+    const index = document.getElementById('questId').value;
+    const quests = getTodayQuests();
+    quests[index] = {
+        ...quests[index],
+        title: document.getElementById('questTitle').value,
+        description: document.getElementById('questDescription').value,
+        stat: document.getElementById('questStat').value,
+        difficulty: document.getElementById('questDifficulty').value,
+        xp: parseInt(document.getElementById('questXP').value)
+    };
+    saveTodayQuests(quests);
+    closeModal('questModal');
+    renderDailyQuests();
+}
+
+function selectAllStats() {
+    document.querySelectorAll('.stat-checkbox').forEach(cb => cb.checked = true);
+}
+
+function generateQuestsWithSelectedStats() {
+    const selected = Array.from(document.querySelectorAll('.stat-checkbox:checked')).map(cb => cb.value);
+    if (selected.length === 0) {
+        alert('Выбери хотя бы одну характеристику!');
+        return;
+    }
+    const data = loadData();
+    const quests = [];
+    selected.forEach(stat => {
+        const templates = data.questTemplates[stat];
+        if (templates && templates.length > 0) {
+            const quest = templates[Math.floor(Math.random() * templates.length)];
+            quests.push({ ...quest, stat, completed: false });
+        }
+    });
+    if (quests.length === 0) {
+        alert('Нет доступных квестов для выбранных характеристик!');
+        return;
+    }
+    saveTodayQuests(quests);
+    document.getElementById('statSelectorSection').style.display = 'none';
+    document.getElementById('selectedStatsDisplay').style.display = 'flex';
+    const statsList = document.getElementById('selectedStatsList');
+    statsList.innerHTML = selected.map(stat => `<span class="selected-stat-tag">${STAT_ICONS[stat]} ${STAT_NAMES[stat]}</span>`).join('');
+    renderDailyQuests();
+}
+
+function showStatSelector() {
+    document.getElementById('statSelectorSection').style.display = 'block';
+    document.getElementById('selectedStatsDisplay').style.display = 'none';
+}
+
+// ============================================
+// TEMPLATE MANAGER
+// ============================================
+function openTemplateManager() {
+    renderTemplateList();
+    document.getElementById('templateModal').classList.add('active');
+}
+
+function renderTemplateList() {
+    const data = loadData();
+    const list = document.getElementById('templateList');
+    let html = '';
+    for (const [stat, templates] of Object.entries(data.questTemplates)) {
+        html += `<h4 style="color:${STAT_COLORS[stat]};margin:15px 0 10px;">${STAT_ICONS[stat]} ${STAT_NAMES[stat]}</h4>`;
+        templates.forEach((template, index) => {
+            html += `
+                <div class="template-item">
+                    <div class="template-info">
+                        <div class="template-title">${template.title}</div>
+                        <div class="template-meta">${template.description} | ${template.difficulty === 'easy' ? '🟢' : template.difficulty === 'medium' ? '🔵' : '🔴'} +${template.xp} XP</div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-template-edit" onclick="editTemplate('${stat}', ${index})">✏️</button>
+                        <button class="btn-template-delete" onclick="deleteTemplate('${stat}', ${index})">🗑️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    list.innerHTML = html;
+}
+
+function addNewTemplate() {
+    const stat = prompt('Выбери характеристику (telo, finansy, intellekt, volya, harizma, psihika):');
+    if (!stat || !STAT_NAMES[stat]) return;
+    const title = prompt('Название квеста:');
+    if (!title) return;
+    const description = prompt('Описание:') || '';
+    const difficulty = prompt('Сложность (easy, medium, hard):') || 'medium';
+    const xp = parseInt(prompt('XP награда:') || '1');
+    const data = loadData();
+    if (!data.questTemplates[stat]) data.questTemplates[stat] = [];
+    data.questTemplates[stat].push({ title, description, difficulty, xp });
+    saveData(data);
+    renderTemplateList();
+}
+
+function editTemplate(stat, index) {
+    const data = loadData();
+    const template = data.questTemplates[stat][index];
+    const title = prompt('Название квеста:', template.title);
+    if (title === null) return;
+    const description = prompt('Описание:', template.description) || '';
+    const difficulty = prompt('Сложность (easy, medium, hard):', template.difficulty) || 'medium';
+    const xp = parseInt(prompt('XP награда:', template.xp) || '1');
+    data.questTemplates[stat][index] = { title, description, difficulty, xp };
+    saveData(data);
+    renderTemplateList();
+}
+
+function deleteTemplate(stat, index) {
+    if (!confirm('Удалить этот шаблон?')) return;
+    const data = loadData();
+    data.questTemplates[stat].splice(index, 1);
+    saveData(data);
+    renderTemplateList();
+}
+
+// ============================================
+// WEEKLY PLAN
+// ============================================
+let currentWeekOffset = 0;
+let weeklyViewMode = 'days';
+const DAYS_OF_WEEK = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+function getWeekDates(offset = 0) {
+    const now = new Date();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - now.getDay() + 1 + offset * 7);
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + i);
+        dates.push(date);
+    }
+    return dates;
+}
+
+function getWeekKey(offset = 0) {
+    const dates = getWeekDates(offset);
+    return `${dates[0].toISOString().split('T')[0]}_${dates[6].toISOString().split('T')[0]}`;
+}
+
+function getWeekPlan(weekKey) {
+    const data = loadData();
+    if (!data.weeklyPlan[weekKey]) data.weeklyPlan[weekKey] = {};
+    return data.weeklyPlan[weekKey];
+}
+
+function saveWeekPlan(weekKey, plan) {
+    const data = loadData();
+    data.weeklyPlan[weekKey] = plan;
+    saveData(data);
+}
+
+function renderWeeklyPlan() {
+    const dates = getWeekDates(currentWeekOffset);
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    const weekLabel = document.getElementById('weekLabel');
+    const content = document.getElementById('weeklyContent');
+    const summaryCard = document.getElementById('weeklySummaryCard');
+    const analysisSection = document.getElementById('weeklyAnalysisSection');
+    if (weekLabel) weekLabel.textContent = `${dates[0].getDate()}.${dates[0].getMonth() + 1} - ${dates[6].getDate()}.${dates[6].getMonth() + 1}`;
+    document.getElementById('view-days').classList.toggle('active', weeklyViewMode === 'days');
+    document.getElementById('view-summary').classList.toggle('active', weeklyViewMode === 'summary');
+    document.getElementById('view-analysis').classList.toggle('active', weeklyViewMode === 'analysis');
+    if (weeklyViewMode === 'summary') {
+        content.innerHTML = '';
+        summaryCard.style.display = 'block';
+        analysisSection.style.display = 'none';
+        renderWeeklySummary(dates, plan);
+    } else if (weeklyViewMode === 'analysis') {
+        content.innerHTML = '';
+        summaryCard.style.display = 'none';
+        analysisSection.style.display = 'block';
+        renderWeeklyAnalysisHistory();
+    } else {
+        summaryCard.style.display = 'none';
+        analysisSection.style.display = 'none';
+        const today = new Date().toDateString();
+        content.innerHTML = '<div class="weekly-days-grid">' + dates.map((date, index) => {
+            const dayKey = DAY_KEYS[index];
+            const tasks = plan[dayKey] || [];
+            const isToday = date.toDateString() === today;
+            const isPast = date < new Date() && !isToday;
+            const completedCount = tasks.filter(t => t.completed).length;
+            let badgeClass = 'none';
+            let badgeText = '0/0';
+            if (tasks.length > 0) {
+                if (completedCount === tasks.length) { badgeClass = 'complete'; badgeText = '✓'; }
+                else { badgeClass = 'partial'; badgeText = `${completedCount}/${tasks.length}`; }
+            }
+            return `
+                <div class="weekly-day ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}">
+                    <div class="day-task-badge ${badgeClass}">${badgeText}</div>
+                    <div class="weekly-day-header">${DAYS_OF_WEEK[index]}<div class="weekly-day-date">${date.getDate()}.${date.getMonth() + 1}</div></div>
+                    <div class="tasks-container">
+                        ${tasks.map((task, taskIndex) => `
+                            <div class="weekly-task ${task.completed ? 'completed' : ''}" onclick="toggleTaskComplete('${dayKey}', ${taskIndex})">
+                                <div class="task-checkbox ${task.completed ? 'checked' : ''}"></div>
+                                <div class="task-content">
+                                    ${task.time ? `<div class="task-time">${formatTimeRange(task.time, task.timeEnd)}</div>` : ''}
+                                    <div class="task-text">${task.text}${task.tag ? `<span class="task-tag tag-system">${task.tag}</span>` : ''}</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn-task-calendar" onclick="event.stopPropagation();addTaskToCalendar('${dayKey}', ${taskIndex})" title="Добавить в Google Календарь">🔔</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn-add-task" onclick="openTaskModal('${dayKey}')">+ Добавить задачу</button>
+                </div>
+            `;
+        }).join('') + '</div>';
+    }
+}
+
+// === NEW: Format time range for display ===
+function formatTimeRange(startTime, endTime) {
+    if (!startTime) return '';
+    if (!endTime) return startTime;
+    return `${startTime} – ${endTime}`;
+}
+// === END: Format time range ===
+
+function setWeeklyView(mode) {
+    weeklyViewMode = mode;
+    renderWeeklyPlan();
+}
+
+function changeWeek(direction) {
+    currentWeekOffset += direction;
+    renderWeeklyPlan();
+}
+
+function openTaskModal(dayKey) {
+    document.getElementById('taskDay').value = dayKey;
+    document.getElementById('taskTitle').value = '';
+    document.getElementById('taskTimeStart').value = '';
+    document.getElementById('taskTimeEnd').value = '';
+    document.getElementById('taskTag').value = '';
+    document.getElementById('taskTimeError').classList.remove('show');
+    document.getElementById('taskModal').classList.add('active');
+}
+
+// === NEW: Time validation ===
+function validateTaskTime() {
+    const startTime = document.getElementById('taskTimeStart').value;
+    const endTime = document.getElementById('taskTimeEnd').value;
+    const errorEl = document.getElementById('taskTimeError');
+    if (startTime && endTime && endTime <= startTime) {
+        errorEl.classList.add('show');
+        return false;
+    }
+    errorEl.classList.remove('show');
+    return true;
+}
+// === END: Time validation ===
+
+function saveTask(event) {
+    event.preventDefault();
+    if (!validateTaskTime()) return;
+    const dayKey = document.getElementById('taskDay').value;
+    const text = document.getElementById('taskTitle').value;
+    const time = document.getElementById('taskTimeStart').value;
+    let timeEnd = document.getElementById('taskTimeEnd').value;
+    const tag = document.getElementById('taskTag').value;
+    // === NEW: Default end time = start + 60 minutes ===
+    if (time && !timeEnd) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const endDate = new Date();
+        endDate.setHours(hours, minutes + 60);
+        timeEnd = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+    }
+    // === END: Default end time ===
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    if (!plan[dayKey]) plan[dayKey] = [];
+    plan[dayKey].push({ text, time, timeEnd, tag, completed: false });
+    saveWeekPlan(weekKey, plan);
+    closeModal('taskModal');
+    renderWeeklyPlan();
+    // === NEW: Reschedule notifications after task change ===
+    rescheduleNotifications();
+    // === END: Reschedule notifications ===
+}
+
+function toggleTaskComplete(dayKey, taskIndex) {
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    if (!plan[dayKey] || !plan[dayKey][taskIndex]) return;
+    plan[dayKey][taskIndex].completed = !plan[dayKey][taskIndex].completed;
+    saveWeekPlan(weekKey, plan);
+    renderWeeklyPlan();
+}
+
+function renderWeeklySummary(dates, plan) {
+    const weekKey = getWeekKey(currentWeekOffset);
+    const dateRange = `${dates[0].getDate()}.${dates[0].getMonth() + 1} - ${dates[6].getDate()}.${dates[6].getMonth() + 1}`;
+    document.getElementById('weeklyDateRange').textContent = dateRange;
+    let totalXP = 0;
+    let questsDone = 0;
+    let questsTotal = 0;
+    let tasksDone = 0;
+    let tasksTotal = 0;
+    const statXP = {};
+    for (const dayKey of DAY_KEYS) {
+        const tasks = plan[dayKey] || [];
+        tasksTotal += tasks.length;
+        tasksDone += tasks.filter(t => t.completed).length;
+    }
+    const data = loadData();
+    for (const date of dates) {
+        const dateStr = date.toDateString();
+        if (data.questCompletions[dateStr]) {
+            for (const [stat, xp] of Object.entries(data.questCompletions[dateStr])) {
+                totalXP += xp;
+                statXP[stat] = (statXP[stat] || 0) + xp;
+                questsDone++;
+            }
+        }
+        if (data.taskCompletions[dateStr]) {
+            totalXP += data.taskCompletions[dateStr];
+        }
+    }
+    const dailyQuests = getTodayQuests();
+    questsTotal = dailyQuests.length;
+    const level = getDailyLevel(totalXP);
+    document.getElementById('weeklyRankEmoji').textContent = level.emoji;
+    document.getElementById('weeklyRankEmoji').style.color = level.color;
+    document.getElementById('weeklyRankName').textContent = level.name;
+    document.getElementById('weeklyRankName').style.color = level.color;
+    document.getElementById('weeklyTotalXP').textContent = totalXP;
+    document.getElementById('weeklyQuestsDone').textContent = `${questsDone}/${questsTotal}`;
+    document.getElementById('weeklyTasksDone').textContent = `${tasksDone}/${tasksTotal}`;
+    const sortedStats = Object.entries(statXP).sort((a, b) => b[1] - a[1]);
+    document.getElementById('weeklyBestStat').textContent = sortedStats.length > 0 ? `${STAT_ICONS[sortedStats[0][0]]} ${STAT_NAMES[sortedStats[0][0]]} (+${sortedStats[0][1]} XP)` : '—';
+    document.getElementById('weeklyWorstStat').textContent = sortedStats.length > 1 ? `${STAT_ICONS[sortedStats[sortedStats.length - 1][0]]} ${STAT_NAMES[sortedStats[sortedStats.length - 1][0]]} (+${sortedStats[sortedStats.length - 1][1]} XP)` : '—';
+}
+
+function sortWeeklyPlanByTime() {
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    for (const dayKey of DAY_KEYS) {
+        if (plan[dayKey]) {
+            plan[dayKey].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+        }
+    }
+    saveWeekPlan(weekKey, plan);
+    renderWeeklyPlan();
+}
+
+function refreshSystemsInWeeklyPlan() {
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    const data = loadData();
+    for (const dayKey of DAY_KEYS) {
+        if (!plan[dayKey]) plan[dayKey] = [];
+        plan[dayKey] = plan[dayKey].filter(t => !t.isSystem);
+    }
+    for (const goal of data.goals) {
+        if (!goal.systems) continue;
+        for (const system of goal.systems) {
+            system.days.forEach((day, index) => {
+                if (day) {
+                    const dayKey = DAY_KEYS[index];
+                    if (!plan[dayKey]) plan[dayKey] = [];
+                    plan[dayKey].push({
+                        text: system.name,
+                        time: system.timeStart,
+                        timeEnd: system.timeEnd,
+                        tag: STAT_NAMES[system.stat],
+                        completed: false,
+                        isSystem: true,
+                        systemId: system.id
+                    });
+                }
+            });
+        }
+    }
+    saveWeekPlan(weekKey, plan);
+    renderWeeklyPlan();
+}
+
+// ============================================
+// GOALS SYSTEM
+// ============================================
+function renderGoals() {
+    const data = loadData();
+    const container = document.getElementById('goalsList');
+    const visionText = document.getElementById('visionText');
+    if (visionText) visionText.value = data.vision || '';
+    if (data.goals.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-text">Добавь свою первую цель!</div></div>';
+        return;
+    }
+    container.innerHTML = data.goals.map((goal, index) => {
+        const totalSubgoals = goal.subgoals ? goal.subgoals.length : 0;
+        const completedSubgoals = goal.subgoals ? goal.subgoals.filter(s => s.completed).length : 0;
+        const progress = totalSubgoals > 0 ? (completedSubgoals / totalSubgoals) * 100 : 0;
+        const isCompleted = totalSubgoals > 0 && completedSubgoals === totalSubgoals;
+        return `
+            <div class="goal-item" onclick="openGoalDetail(${index})">
+                <div class="goal-header">
+                    <span class="goal-title">${goal.title}</span>
+                    ${goal.deadline ? `<span class="goal-deadline">⏰ ${new Date(goal.deadline).toLocaleDateString('ru-RU')}</span>` : ''}
+                </div>
+                <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${progress}%;background:linear-gradient(90deg, var(--accent-green), #00cc6a)"></div></div>
+                <div class="goal-progress-info">
+                    <span class="goal-progress-fraction">${completedSubgoals}/${totalSubgoals} подцелей</span>
+                    <span class="goal-progress-percent">${Math.round(progress)}%</span>
+                </div>
+                ${isCompleted ? `<div class="goal-completed-badge">🏆 Цель достигнута!</div>` : ''}
+                ${goal.systems && goal.systems.length > 0 ? `
+                    <div class="goal-systems">
+                        <div class="goal-systems-title">⚙️ Системы (${goal.systems.length})</div>
+                        ${goal.systems.slice(0, 2).map(s => `
+                            <div class="system-item">
+                                <span>${s.name}</span>
+                                <div class="system-days">${s.days.map((d, i) => d ? `<span class="system-day">${DAYS_OF_WEEK[i]}</span>` : '').join('')}</div>
+                            </div>
+                        `).join('')}
+                        ${goal.systems.length > 2 ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-top:5px;">...и ещё ${goal.systems.length - 2}</div>` : ''}
+                    </div>
+                ` : ''}
+                <div class="goal-actions" onclick="event.stopPropagation()">
+                    <button class="btn-goal-edit" onclick="editGoal(${index})">✏️</button>
+                    <button class="btn-goal-delete" onclick="deleteGoal(${index})">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function saveVision() {
+    const data = loadData();
+    data.vision = document.getElementById('visionText').value;
+    saveData(data);
+    alert('Видение сохранено!');
+}
+
+function openCreateGoalModal() {
+    document.getElementById('newGoalTitle').value = '';
+    document.getElementById('newGoalWhy').value = '';
+    document.getElementById('newGoalDeadline').value = '';
+    document.getElementById('createGoalModal').classList.add('active');
+}
+
+function saveNewGoal(event) {
+    event.preventDefault();
+    const data = loadData();
+    const goal = {
+        id: Date.now(),
+        title: document.getElementById('newGoalTitle').value,
+        why: document.getElementById('newGoalWhy').value,
+        deadline: document.getElementById('newGoalDeadline').value,
+        subgoals: [],
+        systems: []
+    };
+    data.goals.push(goal);
+    saveData(data);
+    closeModal('createGoalModal');
+    renderGoals();
+}
+
+function openGoalDetail(index) {
+    const data = loadData();
+    const goal = data.goals[index];
+    currentGoalIndex = index;
+    document.getElementById('goalDetailTitle').textContent = `🎯 ${goal.title}`;
+    const whySection = document.getElementById('goalWhySection');
+    const whyText = document.getElementById('goalWhyText');
+    if (goal.why) { whySection.style.display = 'block'; whyText.textContent = goal.why; }
+    else whySection.style.display = 'none';
+    const deadlineSection = document.getElementById('goalDeadlineSection');
+    const deadlineText = document.getElementById('goalDeadlineText');
+    if (goal.deadline) { deadlineSection.style.display = 'block'; deadlineText.textContent = new Date(goal.deadline).toLocaleDateString('ru-RU'); }
+    else deadlineSection.style.display = 'none';
+    renderSubgoalsList();
+    renderSystemsList();
+    setGoalTab('subgoals');
+    document.getElementById('goalDetailModal').classList.add('active');
+}
+
+function setGoalTab(tab) {
+    document.getElementById('tab-subgoals').classList.toggle('active', tab === 'subgoals');
+    document.getElementById('tab-systems').classList.toggle('active', tab === 'systems');
+    document.getElementById('subgoalsTab').style.display = tab === 'subgoals' ? 'block' : 'none';
+    document.getElementById('systemsTab').style.display = tab === 'systems' ? 'block' : 'none';
+}
+
+function renderSubgoalsList() {
+    const data = loadData();
+    const goal = data.goals[currentGoalIndex];
+    const container = document.getElementById('subgoalsListDetail');
+    if (!goal.subgoals || goal.subgoals.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">Нет подцелей. Добавь первую!</div></div>';
+        return;
+    }
+    container.innerHTML = goal.subgoals.map((subgoal, index) => `
+        <div class="subgoal-item">
+            <div class="subgoal-checkbox ${subgoal.completed ? 'checked' : ''}" onclick="toggleSubgoalComplete(${index})"></div>
+            <span style="${subgoal.completed ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${subgoal.title}</span>
+        </div>
+    `).join('');
+}
+
+function renderSystemsList() {
+    const data = loadData();
+    const goal = data.goals[currentGoalIndex];
+    const container = document.getElementById('systemsListDetail');
+    if (!goal.systems || goal.systems.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚙️</div><div class="empty-state-text">Нет систем. Добавь первую!</div></div>';
+        return;
+    }
+    container.innerHTML = goal.systems.map((system, index) => `
+        <div class="system-item">
+            <div>
+                <div style="font-weight:bold;margin-bottom:5px;">${system.name}</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${STAT_ICONS[system.stat]} ${STAT_NAMES[system.stat]} | +${system.xp} XP</div>
+            </div>
+            <div class="system-days">${system.days.map((d, i) => d ? `<span class="system-day">${DAYS_OF_WEEK[i]}</span>` : '').join('')}</div>
+        </div>
+    `).join('');
+}
+
+function toggleSubgoalComplete(index) {
+    const data = loadData();
+    data.goals[currentGoalIndex].subgoals[index].completed = !data.goals[currentGoalIndex].subgoals[index].completed;
+    saveData(data);
+    renderSubgoalsList();
+    renderGoals();
+}
+
+function openCreateSubgoalModal() {
+    document.getElementById('newSubgoalTitle').value = '';
+    document.getElementById('newSubgoalWhy').value = '';
+    document.getElementById('newSubgoalDeadline').value = '';
+    document.getElementById('createSubgoalModal').classList.add('active');
+}
+
+function saveNewSubgoal(event) {
+    event.preventDefault();
+    const data = loadData();
+    const subgoal = {
+        id: Date.now(),
+        title: document.getElementById('newSubgoalTitle').value,
+        why: document.getElementById('newSubgoalWhy').value,
+        deadline: document.getElementById('newSubgoalDeadline').value,
+        completed: false
+    };
+    if (!data.goals[currentGoalIndex].subgoals) data.goals[currentGoalIndex].subgoals = [];
+    data.goals[currentGoalIndex].subgoals.push(subgoal);
+    saveData(data);
+    closeModal('createSubgoalModal');
+    renderSubgoalsList();
+    renderGoals();
+}
+
+function openAddSystemModal() {
+    document.getElementById('systemName').value = '';
+    document.querySelectorAll('#systemDaysSelector .day-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById('systemTimeStart').value = '';
+    document.getElementById('systemTimeEnd').value = '';
+    document.getElementById('systemXP').value = '2';
+    document.querySelectorAll('#systemStatSelector .day-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById('systemStat').value = '';
+    document.getElementById('addSystemModal').classList.add('active');
+}
+
+function toggleDay(el) {
+    el.classList.toggle('selected');
+}
+
+function selectSystemStat(el) {
+    document.querySelectorAll('#systemStatSelector .day-option').forEach(opt => opt.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('systemStat').value = el.dataset.stat;
+}
+
+function saveSystemToGoal(event) {
+    event.preventDefault();
+    const data = loadData();
+    const days = Array.from(document.querySelectorAll('#systemDaysSelector .day-option')).map(el => el.classList.contains('selected'));
+    if (!days.some(d => d)) { alert('Выбери хотя бы один день!'); return; }
+    const stat = document.getElementById('systemStat').value;
+    if (!stat) { alert('Выбери характеристику!'); return; }
+    const system = {
+        id: Date.now(),
+        name: document.getElementById('systemName').value,
+        days: days,
+        timeStart: document.getElementById('systemTimeStart').value,
+        timeEnd: document.getElementById('systemTimeEnd').value,
+        xp: parseInt(document.getElementById('systemXP').value),
+        stat: stat
+    };
+    if (!data.goals[currentGoalIndex].systems) data.goals[currentGoalIndex].systems = [];
+    data.goals[currentGoalIndex].systems.push(system);
+    saveData(data);
+    closeModal('addSystemModal');
+    renderSystemsList();
+    renderGoals();
+}
+
+function editGoal(index) {
+    const data = loadData();
+    const goal = data.goals[index];
+    const title = prompt('Название цели:', goal.title);
+    if (title === null) return;
+    goal.title = title;
+    goal.why = prompt('Зачем эта цель:', goal.why || '') || '';
+    goal.deadline = prompt('Дедлайн (YYYY-MM-DD):', goal.deadline || '') || '';
+    saveData(data);
+    renderGoals();
+}
+
+function deleteGoal(index) {
+    if (!confirm('Удалить эту цель?')) return;
+    const data = loadData();
+    data.goals.splice(index, 1);
+    saveData(data);
+    renderGoals();
+}
+
+// ============================================
+// ANALYSIS SYSTEM
+// ============================================
+function saveDailyAnalysis() {
+    const data = loadData();
+    const today = new Date().toISOString().split('T')[0];
+    data.dailyAnalyses[today] = {
+        achievements: document.getElementById('dailyAchievements').value,
+        failures: document.getElementById('dailyFailures').value,
+        conclusions: document.getElementById('dailyConclusions').value,
+        date: today
+    };
+    saveData(data);
+    const savedMsg = document.getElementById('dailyAnalysisSaved');
+    savedMsg.style.display = 'block';
+    setTimeout(() => savedMsg.style.display = 'none', 3000);
+    loadPreviousDayConclusions();
+}
+
+function loadPreviousDayConclusions() {
+    const data = loadData();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = yesterday.toISOString().split('T')[0];
+    const analysis = data.dailyAnalyses[yesterdayKey];
+    const section = document.getElementById('previousDayConclusions');
+    const text = document.getElementById('previousDayConclusionsText');
+    if (analysis && analysis.conclusions) {
+        section.style.display = 'block';
+        text.textContent = analysis.conclusions;
+    } else section.style.display = 'none';
+}
+
+function loadTodayAnalysis() {
+    const data = loadData();
+    const today = new Date().toISOString().split('T')[0];
+    const analysis = data.dailyAnalyses[today];
+    if (analysis) {
+        document.getElementById('dailyAchievements').value = analysis.achievements || '';
+        document.getElementById('dailyFailures').value = analysis.failures || '';
+        document.getElementById('dailyConclusions').value = analysis.conclusions || '';
+    }
+    loadPreviousDayConclusions();
+}
+
+function saveWeeklyAnalysis() {
+    const data = loadData();
+    const weekKey = getWeekKey(currentWeekOffset);
+    data.weeklyAnalyses[weekKey] = {
+        success: document.getElementById('weeklySuccess').value,
+        systems: document.getElementById('weeklySystems').value,
+        changes: document.getElementById('weeklyChanges').value,
+        weekKey: weekKey,
+        date: new Date().toISOString()
+    };
+    saveData(data);
+    const savedMsg = document.getElementById('weeklyAnalysisSaved');
+    savedMsg.style.display = 'block';
+    setTimeout(() => savedMsg.style.display = 'none', 3000);
+    renderWeeklyAnalysisHistory();
+}
+
+function loadWeeklyAnalysis() {
+    const data = loadData();
+    const weekKey = getWeekKey(currentWeekOffset);
+    const analysis = data.weeklyAnalyses[weekKey];
+    if (analysis) {
+        document.getElementById('weeklySuccess').value = analysis.success || '';
+        document.getElementById('weeklySystems').value = analysis.systems || '';
+        document.getElementById('weeklyChanges').value = analysis.changes || '';
+    } else {
+        document.getElementById('weeklySuccess').value = '';
+        document.getElementById('weeklySystems').value = '';
+        document.getElementById('weeklyChanges').value = '';
+    }
+}
+
+function renderWeeklyAnalysisHistory() {
+    const data = loadData();
+    const container = document.getElementById('weeklyAnalysisHistory');
+    const analyses = Object.values(data.weeklyAnalyses).sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (analyses.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">Нет сохранённых анализов недель</div></div>';
+        return;
+    }
+    container.innerHTML = analyses.map(a => `
+        <div class="weekly-analysis-item">
+            <div class="weekly-analysis-item-header">
+                <span class="weekly-analysis-item-date">📅 Неделя: ${a.weekKey.replace('_', ' - ')}</span>
+            </div>
+            <div class="weekly-analysis-item-content">
+                ${a.success ? `<div><div class="weekly-analysis-question">Что получилось хорошо:</div><div class="weekly-analysis-answer">${a.success}</div></div>` : ''}
+                ${a.systems ? `<div><div class="weekly-analysis-question">Системы:</div><div class="weekly-analysis-answer">${a.systems}</div></div>` : ''}
+                ${a.changes ? `<div><div class="weekly-analysis-question">Изменения:</div><div class="weekly-analysis-answer">${a.changes}</div></div>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// JOURNAL SYSTEM
+// ============================================
+let journalTab = 'day';
+
+function setJournalTab(tab) {
+    journalTab = tab;
+    document.getElementById('journal-tab-day').classList.toggle('active', tab === 'day');
+    document.getElementById('journal-tab-week').classList.toggle('active', tab === 'week');
+    document.getElementById('journalDayContent').classList.toggle('active', tab === 'day');
+    document.getElementById('journalWeekContent').classList.toggle('active', tab === 'week');
+    renderJournal();
+}
+
+function renderJournal() {
+    if (journalTab === 'day') renderDayJournal();
+    else renderWeekJournal();
+}
+
+function renderDayJournal() {
+    const data = loadData();
+    const container = document.getElementById('journalDayList');
+    const analyses = Object.values(data.dailyAnalyses).sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (analyses.length === 0) {
+        container.innerHTML = '<div class="journal-empty"><div class="journal-empty-icon">📖</div><div class="journal-empty-text">Нет сохранённых анализов дней</div></div>';
+        return;
+    }
+    container.innerHTML = analyses.map(a => `
+        <div class="journal-entry">
+            <div class="journal-entry-header" onclick="toggleJournalEntry(this.parentElement)">
+                <span class="journal-entry-date">📅 ${new Date(a.date).toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span class="journal-entry-toggle">▼</span>
+            </div>
+            <div class="journal-entry-body">
+                <div class="journal-entry-field"><div class="journal-entry-label">Успехи:</div><div class="journal-entry-text ${a.achievements ? '' : 'empty'}">${a.achievements || 'Нет записи'}</div></div>
+                <div class="journal-entry-field"><div class="journal-entry-label">Неудачи:</div><div class="journal-entry-text ${a.failures ? '' : 'empty'}">${a.failures || 'Нет записи'}</div></div>
+                <div class="journal-entry-field"><div class="journal-entry-label">Выводы:</div><div class="journal-entry-text ${a.conclusions ? '' : 'empty'}">${a.conclusions || 'Нет записи'}</div></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderWeekJournal() {
+    const data = loadData();
+    const container = document.getElementById('journalWeekList');
+    const analyses = Object.values(data.weeklyAnalyses).sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (analyses.length === 0) {
+        container.innerHTML = '<div class="journal-empty"><div class="journal-empty-icon">📖</div><div class="journal-empty-text">Нет сохранённых анализов недель</div></div>';
+        return;
+    }
+    container.innerHTML = analyses.map(a => `
+        <div class="journal-entry">
+            <div class="journal-entry-header" onclick="toggleJournalEntry(this.parentElement)">
+                <span class="journal-entry-date">📆 Неделя: ${a.weekKey.replace('_', ' - ')}</span>
+                <span class="journal-entry-toggle">▼</span>
+            </div>
+            <div class="journal-entry-body">
+                <div class="journal-entry-field"><div class="journal-entry-label">Что получилось хорошо:</div><div class="journal-entry-text ${a.success ? '' : 'empty'}">${a.success || 'Нет записи'}</div></div>
+                <div class="journal-entry-field"><div class="journal-entry-label">Системы:</div><div class="journal-entry-text ${a.systems ? '' : 'empty'}">${a.systems || 'Нет записи'}</div></div>
+                <div class="journal-entry-field"><div class="journal-entry-label">Изменения:</div><div class="journal-entry-text ${a.changes ? '' : 'empty'}">${a.changes || 'Нет записи'}</div></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleJournalEntry(entry) {
+    entry.classList.toggle('expanded');
+}
+
+// ============================================
+// LAWS OF WINNERS
+// ============================================
+function toggleLaw(lawNum) {
+    const accordion = document.querySelector(`.law-accordion[data-law="${lawNum}"]`);
+    accordion.classList.toggle('active');
+}
+
+// ============================================
+// MODAL UTILITIES
+// ============================================
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+let currentGoalIndex = 0;
+
+function init() {
+    initNavigation();
+    updateStatsDisplay();
+    renderStreak();
+    renderDailyQuests();
+    loadTodayAnalysis();
+    updateDailyLevelDisplay();
+    // === NEW: Check notification permission on init ===
+    checkNotificationPermission();
+    // === END: Check notification permission ===
+}
+
+// Close modals on outside click
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', init);
+
+// ============================================
+// SERVICE WORKER REGISTRATION
+// ============================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => console.log('ServiceWorker registered:', registration))
+            .catch(error => console.log('ServiceWorker registration failed:', error));
+    });
+}
+
+// ============================================
+// GOOGLE CALENDAR INTEGRATION
+// ============================================
+
+// === NEW: Open Calendar Sync Modal ===
+function openCalendarSyncModal() {
+    const dates = getWeekDates(currentWeekOffset);
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    const container = document.getElementById('calendarSyncTaskList');
+    let tasks = [];
+    DAY_KEYS.forEach((dayKey, index) => {
+        const dayTasks = plan[dayKey] || [];
+        dayTasks.forEach((task, taskIndex) => {
+            tasks.push({
+                dayKey,
+                taskIndex,
+                title: task.text,
+                dayName: DAYS_OF_WEEK[index],
+                time: task.time,
+                timeEnd: task.timeEnd,
+                date: dates[index]
+            });
+        });
+    });
+    if (tasks.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-text">Нет задач для синхронизации на этой неделе</div></div>';
+    } else {
+        container.innerHTML = tasks.map(t => `
+            <div class="calendar-modal-task-item">
+                <div class="calendar-modal-task-info">
+                    <div class="calendar-modal-task-title">${t.title}</div>
+                    <div class="calendar-modal-task-meta">${t.dayName}${t.time ? ' | ' + formatTimeRange(t.time, t.timeEnd) : ''}</div>
+                </div>
+                <button class="btn-add-to-calendar" onclick="addTaskToCalendar('${t.dayKey}', ${t.taskIndex}, true)">Добавить</button>
+            </div>
+        `).join('');
+    }
+    document.getElementById('calendarSyncModal').classList.add('active');
+}
+// === END: Open Calendar Sync Modal ===
+
+// === NEW: Add task to Google Calendar ===
+function addTaskToCalendar(dayKey, taskIndex, fromModal = false) {
+    const dates = getWeekDates(currentWeekOffset);
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    const dayTasks = plan[dayKey] || [];
+    const task = dayTasks[taskIndex];
+    if (!task) return;
+    const dayIndex = DAY_KEYS.indexOf(dayKey);
+    const taskDate = dates[dayIndex];
+    // Build Google Calendar URL
+    const title = encodeURIComponent(task.text);
+    let datesParam = '';
+    if (task.time) {
+        const dateStr = taskDate.toISOString().split('T')[0].replace(/-/g, '');
+        const startTime = task.time.replace(':', '');
+        const endTime = task.timeEnd ? task.timeEnd.replace(':', '') : String(parseInt(startTime) + 100).padStart(4, '0');
+        datesParam = `${dateStr}T${startTime}00/${dateStr}T${endTime}00`;
+    } else {
+        const dateStr = taskDate.toISOString().split('T')[0].replace(/-/g, '');
+        datesParam = `${dateStr}/${dateStr}`;
+    }
+    const details = encodeURIComponent('Добавлено из GameChanger');
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${datesParam}&details=${details}`;
+    window.open(url, '_blank');
+    // Show widget hint (one time)
+    showWidgetHintOnce();
+    if (fromModal) {
+        // Don't close modal, let user add more
+    }
+}
+// === END: Add task to Google Calendar ===
+
+// === NEW: Add all tasks to calendar ===
+function addAllToCalendar() {
+    const dates = getWeekDates(currentWeekOffset);
+    const weekKey = getWeekKey(currentWeekOffset);
+    const plan = getWeekPlan(weekKey);
+    let openedCount = 0;
+    DAY_KEYS.forEach((dayKey, index) => {
+        const dayTasks = plan[dayKey] || [];
+        dayTasks.forEach((task, taskIndex) => {
+            setTimeout(() => {
+                addTaskToCalendar(dayKey, taskIndex, true);
+            }, openedCount * 500);
+            openedCount++;
+        });
+    });
+    // Show widget hint (one time)
+    showWidgetHintOnce();
+}
+// === END: Add all tasks to calendar ===
+
+// === NEW: Widget hint toast (one time) ===
+function showWidgetHintOnce() {
+    const hintShown = localStorage.getItem('widgetHintShown');
+    if (hintShown) return;
+    const toast = document.getElementById('widgetToast');
+    toast.classList.add('show');
+    localStorage.setItem('widgetHintShown', 'true');
+    setTimeout(() => {
+        hideWidgetToast();
+    }, 7000);
+}
+
+function hideWidgetToast() {
+    const toast = document.getElementById('widgetToast');
+    toast.classList.add('hide');
+    setTimeout(() => {
+        toast.classList.remove('show', 'hide');
+    }, 500);
+}
+// === END: Widget hint toast ===
+
+// ============================================
+// NOTIFICATION SYSTEM
+// ============================================
+
+// === NEW: Check notification permission ===
+function checkNotificationPermission() {
+    // Check if already handled
+    const permission = localStorage.getItem('notificationPermission');
+    const dismissedAt = localStorage.getItem('notificationDismissedAt');
+    // If already granted or denied permanently, don't ask
+    if (permission === 'granted') {
+        // Permission granted, schedule notifications
+        rescheduleNotifications();
+        return;
+    }
+    if (permission === 'denied') return;
+    // If dismissed, check if 3 days passed
+    if (dismissedAt) {
+        const daysPassed = (Date.now() - parseInt(dismissedAt)) / (1000 * 60 * 60 * 24);
+        if (daysPassed < 3) return;
+    }
+    // Show popup after a short delay
+    setTimeout(() => {
+        showNotificationPopup();
+    }, 2000);
+}
+// === END: Check notification permission ===
+
+// === NEW: Show notification permission popup ===
+function showNotificationPopup() {
+    const popup = document.getElementById('notificationPopup');
+    popup.classList.add('show');
+}
+// === END: Show notification permission popup ===
+
+// === NEW: Allow notifications ===
+function allowNotifications() {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            localStorage.setItem('notificationPermission', permission);
+            hideNotificationPopup();
+            if (permission === 'granted') {
+                rescheduleNotifications();
+            }
+        });
+    } else {
+        hideNotificationPopup();
+    }
+}
+// === END: Allow notifications ===
+
+// === NEW: Dismiss notification popup ===
+function dismissNotificationPopup() {
+    localStorage.setItem('notificationDismissedAt', Date.now().toString());
+    hideNotificationPopup();
+}
+
+function hideNotificationPopup() {
+    const popup = document.getElementById('notificationPopup');
+    popup.classList.remove('show');
+}
+// === END: Dismiss notification popup ===
+
+// === NEW: Notification scheduling ===
+let notificationTimeouts = [];
+
+function rescheduleNotifications() {
+    // Clear existing timeouts
+    notificationTimeouts.forEach(timeout => clearTimeout(timeout));
+    notificationTimeouts = [];
+    // Check permission
+    if (localStorage.getItem('notificationPermission') !== 'granted') return;
+    if (!('Notification' in window)) return;
+    // Get all tasks for current and future weeks
+    const data = loadData();
+    const now = new Date();
+    // Process weekly plans
+    for (const [weekKey, plan] of Object.entries(data.weeklyPlan)) {
+        DAY_KEYS.forEach((dayKey, dayIndex) => {
+            const tasks = plan[dayKey] || [];
+            tasks.forEach(task => {
+                if (!task.time || task.completed) return;
+                // Parse task date
+                const weekDates = weekKey.split('_');
+                const weekStart = new Date(weekDates[0]);
+                const taskDate = new Date(weekStart);
+                taskDate.setDate(weekStart.getDate() + dayIndex);
+                // Parse task time
+                const [hours, minutes] = task.time.split(':').map(Number);
+                taskDate.setHours(hours, minutes, 0, 0);
+                // Skip past tasks
+                if (taskDate < now) return;
+                // Schedule 30-minute reminder
+                const reminder30 = new Date(taskDate.getTime() - 30 * 60 * 1000);
+                if (reminder30 > now) {
+                    const delay = reminder30.getTime() - now.getTime();
+                    const timeout = setTimeout(() => {
+                        showNotification(`⏰ Через 30 минут: ${task.text}`, task.text + '_30min');
+                    }, delay);
+                    notificationTimeouts.push(timeout);
+                }
+                // Schedule 5-minute reminder
+                const reminder5 = new Date(taskDate.getTime() - 5 * 60 * 1000);
+                if (reminder5 > now) {
+                    const delay = reminder5.getTime() - now.getTime();
+                    const timeout = setTimeout(() => {
+                        showNotification(`⏰ Через 5 минут: ${task.text}`, task.text + '_5min');
+                    }, delay);
+                    notificationTimeouts.push(timeout);
+                }
+            });
+        });
+    }
+}
+
+function showNotification(body, tag) {
+    if (Notification.permission === 'granted') {
+        new Notification('GameChanger', {
+            body: body,
+            icon: './icon-192.png',
+            tag: tag,
+            requireInteraction: false
+        });
+    }
+}
+// === END: Notification scheduling ===
+
+</script>
+</body>
+</html>
